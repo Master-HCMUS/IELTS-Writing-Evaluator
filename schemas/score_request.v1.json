@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "score_request.v1.json",
+  "title": "ScoreRequestV1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "task_type": { "type": "string", "enum": ["task1", "task2"] },
+    "essay": { "type": "string", "minLength": 1, "maxLength": 20000 },
+    "image_base64": { "type": "string" },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "max_evidence": { "type": "integer", "minimum": 1, "maximum": 3 }
+      }
+    }
+  },
+  "required": ["task_type", "essay"],
+  "allOf": [
+    {
+      "if": { "properties": { "task_type": { "const": "task1" } } },
+      "then": { "required": ["essay"] }
+    }
+  ]
+}

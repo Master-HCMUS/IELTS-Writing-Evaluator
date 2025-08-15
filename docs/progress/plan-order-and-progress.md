@@ -77,8 +77,8 @@ Progress Checklist (update inline)
 Lightweight Tracker Table
 | ID | Work Item | Phase | Owner | Start | Due | Status | Notes |
 |----|-----------|-------|-------|-------|-----|--------|-------|
-| FND-1 | JSON Schemas v1 | 0 |  |  |  | Not started | score_request/response, facts_task1 |
-| FND-2 | Determinism & versioning | 0 |  |  |  | Not started | temp=0, top_p=0.1, prompt hash |
+| FND-1 | JSON Schemas v1 | 0 |  |  |  | In progress | Added score_request/response v1 and facts_task1 v1 under /schemas |
+| FND-2 | Determinism & versioning | 0 |  |  |  | In progress | determinism.py with fixed decoding + prompt_hash + RunMeta |
 | T2-API | /score Task 2 (3-pass) | 1 |  |  |  | Not started | median, dispersion, confidence |
 | LOG-1 | Storage & run logging | 1 |  |  |  | Not started | request/response/meta blobs |
 | OBS-1 | Baseline telemetry | 1 |  |  |  | Not started | p50/p95 latency, token usage |
@@ -90,9 +90,9 @@ Lightweight Tracker Table
 | DEP-1 | Containerized deploy | 4 |  |  |  | Not started | ACA/App Service, CI/CD |
 | CLI-1 | CLI & batch runner | 4 |  |  |  | Not started | resume, rate limit |
 
-Milestones
-- M1 (End Phase 1): Task 2 scoring API deterministic and schema-valid.
-- M2 (End Phase 2): Task 1 supported with facts, confidence gating.
+How to Update
+- Edit this file to tick checkboxes, update the table, and add notes.
+- Keep alignment with docs/plan files; version changes should bump prompt/schema hash.
 - M3 (End Phase 3): Calibration metrics achieved on held-out test.
 - M4 (End Phase 4): PoC deployable with span validation, dashboards, and cost guards.
 

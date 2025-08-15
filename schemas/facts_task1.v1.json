@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "facts_task1.v1.json",
+  "title": "Task1FactsV1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "overview": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "measures": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1, "maxLength": 100 },
+      "minItems": 0,
+      "maxItems": 8
+    },
+    "trends": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "measure": { "type": "string" },
+          "direction": { "type": "string", "enum": ["up", "down", "flat", "mixed"] },
+          "period": { "type": "string" }
+        },
+        "required": ["measure", "direction"]
+      },
+      "minItems": 0,
+      "maxItems": 10
+    },
+    "extremes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "measure": { "type": "string" },
+          "kind": { "type": "string", "enum": ["min", "max", "outlier"] },
+          "value": { "type": "number" },
+          "unit": { "type": "string" }
+        },
+        "required": ["measure", "kind"]
+      },
+      "minItems": 0,
+      "maxItems": 10
+    },
+    "units": { "type": "string", "minLength": 1, "maxLength": 50 }
+  },
+  "required": ["overview"]
+}
