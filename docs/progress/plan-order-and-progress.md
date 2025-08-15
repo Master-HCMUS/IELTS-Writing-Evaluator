@@ -64,7 +64,7 @@ Feature-to-Plan Mapping (reference)
 - API schemas → docs/plan/api-schemas.md
 
 Progress Checklist (update inline)
-- [ ] Phase 0 Foundations complete (schemas v1, decoding, hash/versioning)
+- [x] Phase 0 Foundations complete (schemas v1, decoding, hash/versioning)
 - [ ] Phase 1 Task 2 minimal API live (deterministic 3-pass, logging, metrics)
 - [ ] Phase 2 Task 1 vision facts integrated and gated by confidence
 - [ ] Phase 3 Calibration trained, applied at runtime, metrics meet targets
@@ -77,8 +77,8 @@ Progress Checklist (update inline)
 Lightweight Tracker Table
 | ID | Work Item | Phase | Owner | Start | Due | Status | Notes |
 |----|-----------|-------|-------|-------|-----|--------|-------|
-| FND-1 | JSON Schemas v1 | 0 |  |  |  | In progress | Added score_request/response v1 and facts_task1 v1 under /schemas |
-| FND-2 | Determinism & versioning | 0 |  |  |  | In progress | determinism.py with fixed decoding + prompt_hash + RunMeta |
+| FND-1 | JSON Schemas v1 | 0 |  |  |  | Complete | Added v1 schemas and validation utilities under src/app/validation |
+| FND-2 | Determinism & versioning | 0 |  |  |  | Complete | determinism.py (fixed decoding, prompt_hash, RunMeta); pytest pythonpath set |
 | T2-API | /score Task 2 (3-pass) | 1 |  |  |  | Not started | median, dispersion, confidence |
 | LOG-1 | Storage & run logging | 1 |  |  |  | Not started | request/response/meta blobs |
 | OBS-1 | Baseline telemetry | 1 |  |  |  | Not started | p50/p95 latency, token usage |
