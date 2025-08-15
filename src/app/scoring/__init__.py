@@ -1,0 +1,1 @@
+# Scoring pipeline package (Task 2 stub scorer, aggregation utilities).

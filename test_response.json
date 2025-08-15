@@ -1,0 +1,98 @@
+{
+  "per_criterion": [
+    {
+      "name": "Task Response",
+      "band": 7.5,
+      "evidence_quotes": [
+        "While some argue this requirement would be beneficial, I partially agree with this proposition, believing that voluntary participation would be more effective than compulsion.",
+        "In conclusion, while community service offers valuable learning experiences and social benefits, making it compulsory may diminish its intended impact."
+      ],
+      "errors": [],
+      "suggestions": [
+        "Expand on the benefits of voluntary participation with specific examples.",
+        "Clarify the position on compulsory service with more detailed reasoning.",
+        "Include counterarguments to strengthen the overall argument.",
+        "Provide more specific examples of community service activities.",
+        "Discuss potential solutions to the challenges of mandatory service."
+      ]
+    },
+    {
+      "name": "Coherence & Cohesion",
+      "band": 7.0,
+      "evidence_quotes": [
+        "On the one hand, mandatory community service could provide numerous benefits to both students and society.",
+        "On the other hand, forcing students to participate in community service may have counterproductive effects."
+      ],
+      "errors": [],
+      "suggestions": [
+        "Use more varied cohesive devices to enhance flow.",
+        "Ensure each paragraph has a clear topic sentence.",
+        "Link ideas more explicitly between paragraphs.",
+        "Avoid repetitive structures in paragraph transitions.",
+        "Consider using more examples to illustrate points clearly."
+      ]
+    },
+    {
+      "name": "Lexical Resource",
+      "band": 7.5,
+      "evidence_quotes": [
+        "foster a sense of social responsibility",
+        "develop empathy and understanding of diverse social issues",
+        "potentially developing negative attitudes toward volunteering"
+      ],
+      "errors": [],
+      "suggestions": [
+        "Incorporate more advanced vocabulary related to community service.",
+        "Reduce repetition of common phrases.",
+        "Use synonyms to enhance lexical variety.",
+        "Explore idiomatic expressions to enrich language.",
+        "Ensure precision in word choice to convey ideas clearly."
+      ]
+    },
+    {
+      "name": "Grammatical Range & Accuracy",
+      "band": 7.0,
+      "evidence_quotes": [
+        "students might view them as mere obligations rather than meaningful contributions",
+        "adding compulsory service to already demanding academic schedules could increase stress levels"
+      ],
+      "errors": [
+        {
+          "span": "students might view them as mere obligations rather than meaningful contributions",
+          "type": "grammar",
+          "fix": "Consider rephrasing for clarity."
+        },
+        {
+          "span": "adding compulsory service to already demanding academic schedules could increase stress levels",
+          "type": "grammar",
+          "fix": "Ensure subject-verb agreement."
+        }
+      ],
+      "suggestions": [
+        "Vary sentence structures to enhance complexity.",
+        "Ensure consistent use of tenses throughout the essay.",
+        "Check for subject-verb agreement in complex sentences.",
+        "Minimize run-on sentences for clarity.",
+        "Proofread for punctuation accuracy."
+      ]
+    }
+  ],
+  "overall": 7.5,
+  "votes": [
+    7.5,
+    7.0,
+    7.5
+  ],
+  "dispersion": 0.5,
+  "confidence": "high",
+  "meta": {
+    "prompt_hash": "fcea71a62537de06054be25502430393ef6f81bb1c8a93a2d7f677d689054664",
+    "model": "gpt-4o-mini",
+    "schema_version": "v1",
+    "rubric_version": "rubric/v1",
+    "token_usage": {
+      "input_tokens": 2127,
+      "output_tokens": 1970
+    }
+  }
+}

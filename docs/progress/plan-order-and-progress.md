@@ -65,7 +65,7 @@ Feature-to-Plan Mapping (reference)
 
 Progress Checklist (update inline)
 - [x] Phase 0 Foundations complete (schemas v1, decoding, hash/versioning)
-- [ ] Phase 1 Task 2 minimal API live (deterministic 3-pass, logging, metrics)
+- [x] Phase 1 Task 2 minimal API live (deterministic 3-pass, logging, metrics)
 - [ ] Phase 2 Task 1 vision facts integrated and gated by confidence
 - [ ] Phase 3 Calibration trained, applied at runtime, metrics meet targets
 - [ ] Phase 4 Span validation + caps enforced in API responses
@@ -79,9 +79,9 @@ Lightweight Tracker Table
 |----|-----------|-------|-------|-------|-----|--------|-------|
 | FND-1 | JSON Schemas v1 | 0 |  |  |  | Complete | Added v1 schemas and validation utilities under src/app/validation |
 | FND-2 | Determinism & versioning | 0 |  |  |  | Complete | determinism.py (fixed decoding, prompt_hash, RunMeta); pytest pythonpath set |
-| T2-API | /score Task 2 (3-pass) | 1 |  |  |  | Not started | median, dispersion, confidence |
-| LOG-1 | Storage & run logging | 1 |  |  |  | Not started | request/response/meta blobs |
-| OBS-1 | Baseline telemetry | 1 |  |  |  | Not started | p50/p95 latency, token usage |
+| T2-API | /score Task 2 (3-pass) | 1 |  |  |  | Complete | /score with LLM integration (mock mode for local), prompts, 3-pass aggregation |
+| LOG-1 | Storage & run logging | 1 |  |  |  | Complete | Local runs/{date}/{run_id}/{request,response,meta}.json persisted |
+| OBS-1 | Baseline telemetry | 1 |  |  |  | Complete | Latency middleware + GET /metrics (requests, 2xx/4xx/5xx, p50/p95/p99) |
 | T1-VSN | Task 1 facts (vision) | 2 |  |  |  | Not started | facts schema + integration |
 | CAL-1 | Batch scoring 1,000 | 3 |  |  |  | Not started | deterministic 2-pass |
 | CAL-2 | Isotonic fit + apply | 3 |  |  |  | Not started | QWK ≥ 0.80 on test |
