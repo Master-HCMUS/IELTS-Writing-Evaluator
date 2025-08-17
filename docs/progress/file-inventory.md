@@ -32,6 +32,12 @@ Inventory
 | docs/rubric/v1/summary.md | Condensed IELTS rubric v1 | Copilot | 2025-08-15 |
 | docs/rubric/v1/anchors.json | Anchor micro-exemplars v1 | Copilot | 2025-08-15 |
 | tests/test_metrics_endpoint.py | Metrics endpoint test | Copilot | 2025-08-15 |
+| docs/plan/evaluation/README.md | Evaluation plan overview and index | Copilot | 2025-08-17 |
+| docs/plan/evaluation/scope-and-dataset.md | Dataset details and sampling rules | Copilot | 2025-08-17 |
+| docs/plan/evaluation/design-and-files.md | Code structure for evaluation under src/ | Copilot | 2025-08-17 |
+| docs/plan/evaluation/metrics-and-report.md | Metrics definitions and report format | Copilot | 2025-08-17 |
+| docs/plan/evaluation/runbook.md | How to run the evaluation | Copilot | 2025-08-17 |
+| docs/plan/evaluation/progress-tracker.md | Checklist and status table | Copilot | 2025-08-17 |
 
 Change Log
 - [2025-08-15 09:00Z] Editor: Copilot
@@ -58,3 +64,15 @@ Change Log
   - files: pyproject.toml, src/app/prompts/__init__.py, src/app/prompts/task2.py, src/app/scoring/llm_client.py, src/app/main.py, test_local.py, docs/progress/plan-order-and-progress.md, docs/progress/file-inventory.md
   - summary: Integrated LLM scoring for Task 2 with Azure OpenAI client and mock mode for local testing; added prompts with rubric integration.
   - notes: Task 2 now runnable locally without Azure credentials (uses mock mode); with credentials, calls Azure OpenAI.
+   - [2025-08-17 08:00Z] Editor: Copilot
+  - files: docs/plan/evaluation/README.md, docs/plan/evaluation/scope-and-dataset.md, docs/plan/evaluation/design-and-files.md, docs/plan/evaluation/metrics-and-report.md, docs/plan/evaluation/runbook.md, docs/plan/evaluation/progress-tracker.md
+  - summary: Added evaluation plan docs and updated to use the test split for evaluation; documented run steps and metrics.
+  - notes: Evaluate 1,000 samples from the test split by default; artifacts go to reports/eval/.
+   - [2025-08-17 08:10Z] Editor: Copilot
+    - files: docs/plan/evaluation/scope-and-dataset.md, docs/plan/evaluation/runbook.md, docs/plan/evaluation/metrics-and-report.md
+    - summary: Updated plan to use all available test records (~491) by default and adjusted runbook commands accordingly.
+    - notes: Runner should treat --num-samples as optional; default is full test split.
+     - [2025-08-17 08:20Z] Editor: Copilot
+      - files: docs/plan/evaluation/design-and-files.md
+      - summary: Clarified that the FastAPI /score endpoint will use the reusable scorer pipeline to keep a single source of truth.
+      - notes: Avoids duplication and keeps evaluation runner and API behavior aligned.
