@@ -32,6 +32,13 @@ Inventory
 | docs/rubric/v1/summary.md | Condensed IELTS rubric v1 | Copilot | 2025-08-15 |
 | docs/rubric/v1/anchors.json | Anchor micro-exemplars v1 | Copilot | 2025-08-15 |
 | tests/test_metrics_endpoint.py | Metrics endpoint test | Copilot | 2025-08-15 |
+| src/app/scoring/pipeline.py | Reusable 3-pass scorer callable by API and eval | Copilot | 2025-08-17 |
+| src/evaluation/datasets/hf_task2.py | Load HF dataset and sample/test split | Copilot | 2025-08-17 |
+| src/evaluation/predictor.py | Batch predictions using scorer pipeline | Copilot | 2025-08-17 |
+| src/evaluation/metrics.py | Metrics: QWK, MAE, within-0.5, dispersion, corr | Copilot | 2025-08-17 |
+| src/evaluation/reporting.py | Save metrics/predictions and markdown report | Copilot | 2025-08-17 |
+| src/evaluation/runner.py | CLI entrypoint for evaluation | Copilot | 2025-08-17 |
+| tests/test_evaluation_smoke.py | Smoke test for pipeline + reporting | Copilot | 2025-08-17 |
 | docs/plan/evaluation/README.md | Evaluation plan overview and index | Copilot | 2025-08-17 |
 | docs/plan/evaluation/scope-and-dataset.md | Dataset details and sampling rules | Copilot | 2025-08-17 |
 | docs/plan/evaluation/design-and-files.md | Code structure for evaluation under src/ | Copilot | 2025-08-17 |
@@ -68,6 +75,10 @@ Change Log
   - files: docs/plan/evaluation/README.md, docs/plan/evaluation/scope-and-dataset.md, docs/plan/evaluation/design-and-files.md, docs/plan/evaluation/metrics-and-report.md, docs/plan/evaluation/runbook.md, docs/plan/evaluation/progress-tracker.md
   - summary: Added evaluation plan docs and updated to use the test split for evaluation; documented run steps and metrics.
   - notes: Evaluate 1,000 samples from the test split by default; artifacts go to reports/eval/.
+   - [2025-08-17 08:30Z] Editor: Copilot
+    - files: src/app/scoring/pipeline.py, src/evaluation/datasets/hf_task2.py, src/evaluation/predictor.py, src/evaluation/metrics.py, src/evaluation/reporting.py, src/evaluation/runner.py, tests/test_evaluation_smoke.py, src/app/main.py, pyproject.toml, docs/plan/evaluation/progress-tracker.md
+    - summary: Implemented evaluation pipeline and runner, added reusable scorer, wired API to use it, added dependencies, and smoke test.
+    - notes: Next: run smoke (mock mode) then execute full test split evaluation and publish artifacts.
    - [2025-08-17 08:10Z] Editor: Copilot
     - files: docs/plan/evaluation/scope-and-dataset.md, docs/plan/evaluation/runbook.md, docs/plan/evaluation/metrics-and-report.md
     - summary: Updated plan to use all available test records (~491) by default and adjusted runbook commands accordingly.

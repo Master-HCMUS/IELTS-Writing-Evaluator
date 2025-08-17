@@ -1,0 +1,2 @@
+id,band_true,band_pred,diff,dispersion,confidence,word_count,votes,prompt_hash,model
+0,6.5,6.5,0.0,0.5,high,50,"[6.5, 6.5, 7.0]",5fe9c50803c448ca7b5ade5996b09105dfdfcb1316ce9b0ab288ef6131645c0c,gpt-4o-mini

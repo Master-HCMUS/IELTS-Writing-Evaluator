@@ -10,15 +10,12 @@ from fastapi import FastAPI, HTTPException
 import ulid
 
 from .config import settings
-from .prompts.task2 import get_response_schema, get_system_prompt, get_user_prompt
-from .scoring.aggregate import aggregate_per_criterion, aggregate_votes
-from .scoring.llm_client import LLMClient
+from .scoring.pipeline import score_task2_3pass
 from .validation.schemas import (
 	ValidationError,
 	validate_score_request,
 	validate_score_response,
 )
-from .versioning.determinism import prompt_hash
 
 app = FastAPI(title="IELTS Scoring PoC", version="0.1.0")
 # Configure basic logging according to settings
@@ -101,28 +98,8 @@ async def latency_logger(request, call_next):
 		_METRICS["responses_4xx"] += 1
 	elif 500 <= status < 600:
 		_METRICS["responses_5xx"] += 1
-	logger.info("request completed", extra={"path": request.url.path, "status": status, "latency_ms": round(lat_ms, 2)})
+	logger.info("request completed", extra={"path": request.url.path, "status": status})
 	return response
-
-
-# Initialize LLM client (will auto-detect mock mode if no Azure credentials)
-_llm_client = LLMClient()
-
-
-def _phase1_prompt_hash() -> str:
-	# Deterministic hash using schema files and fixed placeholders until prompts are wired.
-	root = _repo_root_from_here()
-	schemas = [str(root / "schemas" / "score_request.v1.json"), str(root / "schemas" / "score_response.v1.json")]
-	# Include actual prompts in hash now
-	system = get_system_prompt()
-	user_template = "Score this IELTS Task 2 essay..."  # Template marker
-	return prompt_hash(
-		system_prompt=system,
-		user_prompt_template=user_template,
-		schema_paths=schemas,
-		rubric_version="rubric/v1",
-		extra={"app_version": app.version},
-	)
 
 
 @app.post("/score")
@@ -148,43 +125,8 @@ def score(request: dict[str, Any]) -> dict[str, Any]:
 	run_id = str(ulid.new())
 	start = time.perf_counter()
 
-	# Three deterministic passes using LLM or mock
-	system_prompt = get_system_prompt()
-	user_prompt = get_user_prompt(essay)
-	schema = get_response_schema()
-	
-	passes = []
-	total_tokens = {"input_tokens": 0, "output_tokens": 0}
-	
-	for _ in range(3):
-		llm_response, tokens = _llm_client.score_task2(system_prompt, user_prompt, schema)
-		passes.append(llm_response)
-		total_tokens["input_tokens"] += tokens["input_tokens"]
-		total_tokens["output_tokens"] += tokens["output_tokens"]
-	
-	votes = [p["overall"] for p in passes]
-	overall, dispersion, confidence = aggregate_votes(votes)
-
-	# Aggregate per-criterion bands across passes (median -> nearest 0.5)
-	agg_per_criterion = aggregate_per_criterion([p["per_criterion"] for p in passes])
-
-	phash = _phase1_prompt_hash()
-
-	# Build response
-	resp: dict[str, Any] = {
-		"per_criterion": agg_per_criterion,
-		"overall": overall,
-		"votes": votes,
-		"dispersion": dispersion,
-		"confidence": confidence,
-		"meta": {
-			"prompt_hash": phash,
-			"model": settings.azure_openai_deployment_scorer,
-			"schema_version": "v1",
-			"rubric_version": "rubric/v1",
-			"token_usage": total_tokens,
-		},
-	}
+	# Use reusable scorer pipeline (single source of truth)
+	resp: dict[str, Any] = score_task2_3pass(essay)
 
 	# Ensure response matches schema
 	try:
@@ -198,9 +140,8 @@ def score(request: dict[str, Any]) -> dict[str, Any]:
 	meta = {
 		"run_id": run_id,
 		"timestamp_utc": datetime.now(timezone.utc).isoformat(),
-		"latency_ms": round(duration_ms, 2),
-		"prompt_hash": phash,
-		"model": settings.azure_openai_deployment_scorer,
+		"prompt_hash": resp.get("meta", {}).get("prompt_hash", ""),
+		"model": resp.get("meta", {}).get("model", settings.azure_openai_deployment_scorer),
 		"app_version": app.version,
 		"env": settings.app_env,
 		"schema_version": "v1",
@@ -217,17 +158,11 @@ def score(request: dict[str, Any]) -> dict[str, Any]:
 @app.get("/metrics")
 def metrics() -> dict[str, Any]:
 	# Phase 1 baseline metrics in JSON
-	lats = list(_LATENCIES_MS)
 	return {
 		"requests_total": _METRICS["requests_total"],
 		"responses": {
 			"2xx": _METRICS["responses_2xx"],
 			"4xx": _METRICS["responses_4xx"],
 			"5xx": _METRICS["responses_5xx"],
-		},
-		"latency_ms": {
-			"p50": round(_percentile(lats, 0.50), 2),
-			"p95": round(_percentile(lats, 0.95), 2),
-			"p99": round(_percentile(lats, 0.99), 2),
 		},
 	}

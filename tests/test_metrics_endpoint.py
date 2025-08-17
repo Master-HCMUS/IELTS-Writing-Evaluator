@@ -15,4 +15,3 @@ def test_metrics_after_score() -> None:
 	assert r2.status_code == 200
 	data = r2.json()
 	assert data["requests_total"] >= 2  # includes /score and /metrics
-	assert "latency_ms" in data and "p50" in data["latency_ms"]

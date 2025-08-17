@@ -15,6 +15,11 @@ dependencies = [
   "ulid-py==1.1.0",
   "typing-extensions>=4.12.2",
   "openai==1.54.3",
+  "pandas==2.2.2",
+  "numpy==1.26.4",
+  "scikit-learn==1.5.1",
+  "scipy==1.13.1",
+  "datasets==2.21.0",
 ]
 
 [project.optional-dependencies]

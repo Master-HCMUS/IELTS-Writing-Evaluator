@@ -1,11 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Sequence
+import math
 
 
 def round_to_half(x: float) -> float:
 	# Banker's rounding to nearest 0.5
-	return round(x * 2) / 2.0
+	return math.floor(x * 2 + 0.5) / 2.0
 
 
 def median(values: Sequence[float]) -> float:
