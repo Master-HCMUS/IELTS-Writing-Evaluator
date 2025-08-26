@@ -5,9 +5,9 @@ Checklist
 - [x] Implement evaluation package under `src/evaluation/` (datasets, predictor, metrics, reporting, runner).
 - [x] Add dependencies to `pyproject.toml`.
 - [x] Add smoke test `tests/test_evaluation_smoke.py`.
-- [ ] Run smoke (20 samples) with mock mode.
-- [ ] Run full job (491 samples) with real scoring.
-- [ ] Review metrics vs targets (QWK ≥ 0.80, within-0.5 ≥ 85%, MAE ≤ 0.35).
+- [x] Run smoke (20 samples) with mock mode.
+- [x] Run full job (491 samples) with real scoring.
+- [x] Review metrics vs targets (QWK ≥ 0.80, within-0.5 ≥ 85%, MAE ≤ 0.35).
 
 Status Table
 | ID | Work Item | Owner | Start | Due | Status | Notes |
