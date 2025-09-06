@@ -23,7 +23,8 @@ def _phase1_prompt_hash() -> str:
         str(root / "schemas" / "score_response.v1.json"),
     ]
     system = get_system_prompt()
-    user_template = "Score this IELTS Task 2 essay..."  # Template marker
+    # Updated template marker to reflect optional question inclusion
+    user_template = "Task 2 Question: {question?} + Score this IELTS Task 2 essay..."
     return prompt_hash(
         system_prompt=system,
         user_prompt_template=user_template,
@@ -33,7 +34,7 @@ def _phase1_prompt_hash() -> str:
     )
 
 
-def score_task2_3pass(essay: str, llm_client: LLMClient | None = None) -> dict[str, Any]:
+def score_task2_3pass(essay: str, question: str | None = None, llm_client: LLMClient | None = None) -> dict[str, Any]:
     """Run the deterministic 3-pass Task 2 scorer and return an aggregated payload.
 
     Returns a dict compatible with score_response.v1.json containing:
@@ -42,7 +43,7 @@ def score_task2_3pass(essay: str, llm_client: LLMClient | None = None) -> dict[s
     llm = llm_client or LLMClient()
 
     system_prompt = get_system_prompt()
-    user_prompt = get_user_prompt(essay)
+    user_prompt = get_user_prompt(essay, question=question)
     schema = get_response_schema()
 
     passes: list[dict[str, Any]] = []

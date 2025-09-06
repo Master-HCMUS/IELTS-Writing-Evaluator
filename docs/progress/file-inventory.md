@@ -1,15 +1,15 @@
 # File Inventory
 
-Inventory
 | Path | Purpose | Owner | Last Updated |
 |------|---------|-------|--------------|
-| pyproject.toml | Pin runtime, deps, tooling; pytest pythonpath | Copilot | 2025-08-15 |
-| .gitignore | Ignore venv, caches, local env, build | Copilot | 2025-08-15 |
-| .env.example | Environment template | Copilot | 2025-08-15 |
-| src/app/main.py | FastAPI app + /score endpoint; latency logging; local run storage | Copilot | 2025-08-15 |
-| src/app/config.py | Pydantic Settings for env config | Copilot | 2025-08-15 |
-| src/app/versioning/determinism.py | Deterministic params, prompt hash, RunMeta | Copilot | 2025-08-15 |
-| src/app/validation/__init__.py | Validation package marker | Copilot | 2025-08-15 |
+| README.md | Root usage & setup guide | team | 2025-09-06 |
+| docs/progress/file-inventory.md | Inventory + change log | team | 2025-09-06 |
+
+## Change Log
+- [2025-09-06 00:00Z] Editor: Copilot
+  - files: README.md, docs/progress/file-inventory.md
+  - summary: Added root README with setup/run/test instructions; created inventory log.
+  - notes: Update plan-order-and-progress.md in next change (not provided in context).
 | src/app/validation/schemas.py | JSON Schema loaders and validators | Copilot | 2025-08-15 |
 | src/app/scoring/__init__.py | Scoring package marker | Copilot | 2025-08-15 |
 | src/app/scoring/aggregate.py | Median/dispersion and per-criterion aggregation utilities | Copilot | 2025-08-15 |

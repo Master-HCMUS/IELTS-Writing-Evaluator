@@ -115,6 +115,7 @@ def score(request: dict[str, Any]) -> dict[str, Any]:
 		raise HTTPException(status_code=400, detail="Only task2 is supported in Phase 1")
 
 	essay = request.get("essay", "")
+	question = request.get("question")  # optional new field
 	wc = _word_count(essay)
 	if wc < 250:
 		raise HTTPException(status_code=400, detail="Task 2 essay must be at least 250 words")
@@ -126,7 +127,7 @@ def score(request: dict[str, Any]) -> dict[str, Any]:
 	start = time.perf_counter()
 
 	# Use reusable scorer pipeline (single source of truth)
-	resp: dict[str, Any] = score_task2_3pass(essay)
+	resp: dict[str, Any] = score_task2_3pass(essay, question=question)
 
 	# Ensure response matches schema
 	try:

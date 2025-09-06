@@ -1,7 +1,7 @@
 {
   "per_criterion": [
     {
-      "name": "Task Response",
+      "name": "Task Response (TR)",
       "band": 7.5,
       "evidence_quotes": [
         "While some argue this requirement would be beneficial, I partially agree with this proposition, believing that voluntary participation would be more effective than compulsion.",
@@ -9,15 +9,13 @@
       ],
       "errors": [],
       "suggestions": [
-        "Expand on the benefits of voluntary participation with specific examples.",
-        "Clarify the position on compulsory service with more detailed reasoning.",
-        "Include counterarguments to strengthen the overall argument.",
+        "Clarify the extent of agreement in the introduction.",
         "Provide more specific examples of community service activities.",
-        "Discuss potential solutions to the challenges of mandatory service."
+        "Expand on the potential benefits of voluntary participation."
       ]
     },
     {
-      "name": "Coherence & Cohesion",
+      "name": "Coherence & Cohesion (CC)",
       "band": 7.0,
       "evidence_quotes": [
         "On the one hand, mandatory community service could provide numerous benefits to both students and society.",
@@ -27,14 +25,12 @@
       "suggestions": [
         "Use more varied cohesive devices to enhance flow.",
         "Ensure each paragraph has a clear topic sentence.",
-        "Link ideas more explicitly between paragraphs.",
-        "Avoid repetitive structures in paragraph transitions.",
-        "Consider using more examples to illustrate points clearly."
+        "Link ideas more explicitly between paragraphs."
       ]
     },
     {
-      "name": "Lexical Resource",
-      "band": 7.5,
+      "name": "Lexical Resource (LR)",
+      "band": 8.0,
       "evidence_quotes": [
         "foster a sense of social responsibility",
         "develop empathy and understanding of diverse social issues",
@@ -42,15 +38,13 @@
       ],
       "errors": [],
       "suggestions": [
-        "Incorporate more advanced vocabulary related to community service.",
-        "Reduce repetition of common phrases.",
-        "Use synonyms to enhance lexical variety.",
-        "Explore idiomatic expressions to enrich language.",
-        "Ensure precision in word choice to convey ideas clearly."
+        "Incorporate more advanced vocabulary.",
+        "Avoid repetition of common phrases.",
+        "Use synonyms to enhance lexical variety."
       ]
     },
     {
-      "name": "Grammatical Range & Accuracy",
+      "name": "Grammatical Range & Accuracy (GRA)",
       "band": 7.0,
       "evidence_quotes": [
         "students might view them as mere obligations rather than meaningful contributions",
@@ -60,39 +54,32 @@
         {
           "span": "students might view them as mere obligations rather than meaningful contributions",
           "type": "grammar",
-          "fix": "Consider rephrasing for clarity."
-        },
-        {
-          "span": "adding compulsory service to already demanding academic schedules could increase stress levels",
-          "type": "grammar",
-          "fix": "Ensure subject-verb agreement."
+          "fix": "Consider revising for clarity."
         }
       ],
       "suggestions": [
-        "Vary sentence structures to enhance complexity.",
-        "Ensure consistent use of tenses throughout the essay.",
-        "Check for subject-verb agreement in complex sentences.",
-        "Minimize run-on sentences for clarity.",
-        "Proofread for punctuation accuracy."
+        "Vary sentence structures more frequently.",
+        "Ensure subject-verb agreement is consistently accurate.",
+        "Minimize the use of passive voice."
       ]
     }
   ],
   "overall": 7.5,
   "votes": [
     7.5,
-    7.0,
+    7.5,
     7.5
   ],
-  "dispersion": 0.5,
+  "dispersion": 0.0,
   "confidence": "high",
   "meta": {
-    "prompt_hash": "fcea71a62537de06054be25502430393ef6f81bb1c8a93a2d7f677d689054664",
+    "prompt_hash": "e8a4aa36b40fd46f65effde3586c5ef5a43029383656cae789aef831d9f6d05f",
     "model": "gpt-4o-mini",
     "schema_version": "v1",
     "rubric_version": "rubric/v1",
     "token_usage": {
-      "input_tokens": 2127,
-      "output_tokens": 1970
+      "input_tokens": 2238,
+      "output_tokens": 1536
     }
   }
 }

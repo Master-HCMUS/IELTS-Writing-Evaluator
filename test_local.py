@@ -25,7 +25,8 @@ def test_local_scoring():
     
     request_data = {
         "task_type": "task2",
-        "essay": SAMPLE_ESSAY
+        "essay": SAMPLE_ESSAY,
+        "question": "Some people believe that unpaid community service should be a compulsory part of high school programmes. To what extent do you agree or disagree?"
     }
     
     print("Testing Task 2 scoring locally...")

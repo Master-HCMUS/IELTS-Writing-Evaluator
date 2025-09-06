@@ -16,7 +16,11 @@ def test_score_task2_minimal() -> None:
 	Third, land-use reforms matter as much as transport policy. Zoning that allows mixed-use, medium-density neighborhoods shortens daily journeys and enables walking by design. Requiring new developments to unbundle parking and provide transit access nudges people toward cleaner choices without heavy-handed bans. In parallel, electrifying public fleets and incentivizing clean delivery vehicles reduce pollution from trips that must still occur.
 
 	In conclusion, raising fuel prices can play a supporting role, but it is neither a silver bullet nor a just solution on its own. Cities should combine modest, predictable pricing signals with ambitious improvements to public transport, safe cycling networks, walkable planning, and clean fleets. This integrated approach tackles congestion and pollution while expanding opportunity for everyone."""
-	req = {"task_type": "task2", "essay": essay}
+	req = {
+		"task_type": "task2",
+		"essay": essay,
+		"question": "Some people believe raising fuel prices is the best way to solve traffic and pollution problems. To what extent do you agree or disagree?",
+	}
 	r = client.post("/score", json=req)
 	assert r.status_code == 200, r.text
 	resp = r.json()
@@ -29,7 +33,11 @@ def test_score_task2_minimal() -> None:
 
 def test_score_rejects_short_task2() -> None:
 	essay = "This response is intentionally brief and does not meet the exam requirement of at least two hundred and fifty words."
-	req = {"task_type": "task2", "essay": essay}
+	req = {
+		"task_type": "task2",
+		"essay": essay,
+		"question": "Discuss whether technology simplifies life or creates more complexity.",
+	}
 	r = client.post("/score", json=req)
 	assert r.status_code == 400
 	assert "at least 250 words" in r.text
@@ -45,6 +53,10 @@ def test_score_rejects_task1_in_phase1() -> None:
 	Third, land-use reforms matter as much as transport policy. Zoning that allows mixed-use, medium-density neighborhoods shortens daily journeys and enables walking by design. Requiring new developments to unbundle parking and provide transit access nudges people toward cleaner choices without heavy-handed bans. In parallel, electrifying public fleets and incentivizing clean delivery vehicles reduce pollution from trips that must still occur.
 
 	In conclusion, raising fuel prices can play a supporting role, but it is neither a silver bullet nor a just solution on its own. Cities should combine modest, predictable pricing signals with ambitious improvements to public transport, safe cycling networks, walkable planning, and clean fleets. This integrated approach tackles congestion and pollution while expanding opportunity for everyone."""
-	req = {"task_type": "task1", "essay": essay}
+	req = {
+		"task_type": "task1",
+		"essay": essay,
+		"question": "Irrelevant for task1 but included to ensure schema tolerance.",
+	}
 	r = client.post("/score", json=req)
 	assert r.status_code == 400

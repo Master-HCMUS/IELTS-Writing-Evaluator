@@ -58,7 +58,8 @@ class PredictConfig:
 
 def _predict_one(row: pd.Series) -> Dict[str, Any]:
     essay = str(row["essay"])
-    result = score_task2_3pass(essay)
+    question = str(row['prompt'])
+    result = score_task2_3pass(essay, question=question)
     # flatten minimal fields
     overall = _coerce_band(result.get("overall"), result.get("votes"))
     # Parse ground-truth robustly (handles strings like "<4\r\r\r")

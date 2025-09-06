@@ -75,8 +75,18 @@ RESPONSE STRUCTURE:
 Ensure all text spans are copied exactly from the essay."""
 
 
-def get_user_prompt(essay: str) -> str:
-    """User prompt with the essay to score."""
+def get_user_prompt(essay: str, question: str | None = None) -> str:
+    """User prompt with the question (if provided) and essay to score."""
+    if question:
+        return f"""Task 2 Question:
+{question}
+
+Score this IELTS Task 2 essay according to the rubric, ensuring alignment with the question:
+
+{essay}
+
+Provide your assessment in the specified JSON format."""
+    # Fallback (legacy)
     return f"""Score this IELTS Task 2 essay according to the rubric:
 
 {essay}

@@ -7,6 +7,7 @@
   "properties": {
     "task_type": { "type": "string", "enum": ["task1", "task2"] },
     "essay": { "type": "string", "minLength": 1, "maxLength": 20000 },
+    "question": { "type": "string", "minLength": 5, "maxLength": 1000 }, 
     "image_base64": { "type": "string" },
     "options": {
       "type": "object",
