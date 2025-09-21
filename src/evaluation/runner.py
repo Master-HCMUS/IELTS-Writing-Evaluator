@@ -18,11 +18,17 @@ def main() -> None:
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument("--output-dir", default=str(Path("reports") / "eval"))
     parser.add_argument("--no-plots", action="store_true")
+    parser.add_argument("--last-only", action="store_true", help="Test only the last item in dataset")
 
     args = parser.parse_args()
 
     ds_cfg = DatasetConfig(name=args.dataset, split=args.split, num_samples=args.num_samples, seed=args.seed)
     df = load_task2_dataframe(ds_cfg)
+    
+    # If last-only flag is set, select only the last row
+    if args.last_only:
+        df = df.tail(1).reset_index(drop=True)
+        print(f"Testing only the last item (id={df.iloc[0]['id']}) from dataset")
 
     preds = run_predictions(df, PredictConfig(workers=args.workers))
 

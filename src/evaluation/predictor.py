@@ -59,6 +59,7 @@ class PredictConfig:
 def _predict_one(row: pd.Series) -> Dict[str, Any]:
     essay = str(row["essay"])
     question = str(row['prompt'])
+    print(f"Scoring id={row['id']} (word_count={row.get('word_count', 'N/A')})...")
     result = score_task2_3pass(essay, question=question)
     # flatten minimal fields
     overall = _coerce_band(result.get("overall"), result.get("votes"))
@@ -73,6 +74,7 @@ def _predict_one(row: pd.Series) -> Dict[str, Any]:
     diff = (overall - band_true) if (math.isfinite(overall) and math.isfinite(band_true)) else math.nan
     dispersion = _try_parse_float(result.get("dispersion"))
     dispersion = dispersion if dispersion is not None else 0.0
+
     return {
         "id": row["id"],
         "band_true": band_true,

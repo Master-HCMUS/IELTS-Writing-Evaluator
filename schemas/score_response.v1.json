@@ -33,7 +33,7 @@
                   "type": "string",
                   "enum": ["grammar", "lexical", "coherence", "task", "other"]
                 },
-                "fix": { "type": "string", "minLength": 1, "maxLength": 200 }
+                "fix": { "type": "string", "minLength": 1, "maxLength": 1000 }
               },
               "required": ["span", "type", "fix"]
             }
@@ -42,7 +42,7 @@
             "type": "array",
             "minItems": 0,
             "maxItems": 5,
-            "items": { "type": "string", "minLength": 1, "maxLength": 200 }
+            "items": { "type": "string", "minLength": 1, "maxLength": 1000 }
           }
         },
         "required": ["name", "band", "evidence_quotes", "errors", "suggestions"]
