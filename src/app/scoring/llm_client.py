@@ -44,6 +44,25 @@ class LLMClient:
                 "output_tokens": 100,
             }
             return mock_response, token_usage
+
+    def score_rubric(self, system_prompt: str, user_prompt: str, schema: dict) -> tuple[dict[str, Any], dict[str, int]]:
+        """
+        Score a single rubric criterion using LLM or mock.
+        Returns (response_json, token_usage).
+        """
+        if self.mock_mode:
+            # Use deterministic stub for local testing
+            from .rubric_stub import score_single_rubric_mock
+            essay = user_prompt.split("essay for")[0].split(":\n\n")[-1]
+            if "\n\nProvide your" in essay:
+                essay = essay.split("\n\nProvide your")[0]
+            mock_response = score_single_rubric_mock(essay, system_prompt)
+            token_usage = {
+                "input_tokens": len(system_prompt.split()) + len(user_prompt.split()),
+                "output_tokens": 50,
+            }
+            return mock_response, token_usage
+        
         
         try:
             response = self.client.chat.completions.create(
@@ -55,7 +74,7 @@ class LLMClient:
                 temperature=TEMPERATURE,
                 top_p=TOP_P,
                 response_format={"type": "json_object"},
-                max_tokens=1500,
+                max_tokens=1500,  # Smaller for single rubric
             )
             
             content = response.choices[0].message.content
@@ -69,8 +88,10 @@ class LLMClient:
             return parsed, token_usage
             
         except Exception as e:
-            logger.error(f"LLM scoring failed: {e}")
+            logger.error(f"Rubric scoring failed: {e}")
             # Fallback to stub on error
-            essay = user_prompt.split("essay according to the rubric:\n\n")[-1]
-            essay = essay.split("\n\nProvide your assessment")[0]
-            return score_once_task2(essay), {"input_tokens": 0, "output_tokens": 0}
+            from .rubric_stub import score_single_rubric_mock
+            essay = user_prompt.split("essay for")[0].split(":\n\n")[-1]
+            if "\n\nProvide your" in essay:
+                essay = essay.split("\n\nProvide your")[0]
+            return score_single_rubric_mock(essay, system_prompt), {"input_tokens": 0, "output_tokens": 0}

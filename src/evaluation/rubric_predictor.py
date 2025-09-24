@@ -8,7 +8,7 @@ import re
 
 import pandas as pd
 
-from app.scoring.pipeline import score_task2_3pass
+from app.scoring.rubric_pipeline import score_all_rubrics
 
 
 def _nearest_half(x: float) -> float:
@@ -54,14 +54,91 @@ def _coerce_band(overall: Any, votes: Any) -> float:
 @dataclass
 class PredictConfig:
     workers: int = 2
+    use_rubric_pipeline: bool = True  # New option to use rubric-specific scoring
 
 
-def _predict_one(row: pd.Series) -> Dict[str, Any]:
+def _predict_one_rubric(row: pd.Series) -> Dict[str, Any]:
+    """Use the new rubric-specific pipeline for scoring"""
     essay = str(row["essay"])
     question = str(row['prompt'])
-    print(f"Scoring id={row['id']} (word_count={row.get('word_count', 'N/A')})...")
+    print(f"Scoring id={row['id']} (word_count={row.get('word_count', 'N/A')}) with rubric pipeline...")
+    
+    # Score using rubric-specific pipeline  
+    result = score_all_rubrics(essay, question=question)
+    
+    # Extract overall score
+    overall = _coerce_band(result.get("overall"), None)
+    
+    # Extract individual rubric scores
+    rubrics = result.get("rubrics", {})
+    rubric_mapping = {
+        "task_response": "tr",
+        "coherence_cohesion": "cc", 
+        "lexical_resource": "lr",
+        "grammatical_range": "gra"
+    }
+    
+    rubric_scores = {}
+    for full_name, abbrev in rubric_mapping.items():
+        if full_name in rubrics:
+            rubric_scores[f"{abbrev}_pred"] = _coerce_band(rubrics[full_name].get("band"), None)
+    
+    # Parse ground-truth scores
+    bt_raw = _try_parse_float(row.get("band_true"))
+    band_true = (
+        _nearest_half(max(0.0, min(9.0, bt_raw)))
+        if bt_raw is not None and math.isfinite(bt_raw)
+        else math.nan
+    )
+    
+    # Parse rubric ground truths
+    rubric_true = {}
+    for rubric in ["tr", "cc", "lr", "gra"]:
+        raw_val = _try_parse_float(row.get(f"{rubric}_true"))
+        rubric_true[f"{rubric}_true"] = (
+            _nearest_half(max(0.0, min(9.0, raw_val)))
+            if raw_val is not None and math.isfinite(raw_val)
+            else math.nan
+        )
+    
+    # Compute diff only when both values are finite
+    diff = (overall - band_true) if (math.isfinite(overall) and math.isfinite(band_true)) else math.nan
+    
+    # Use overall dispersion from rubric pipeline
+    dispersion = result.get("overall_dispersion", 0.0)
+    
+    # Build result dictionary
+    result_dict = {
+        "id": row["id"],
+        "band_true": band_true,
+        "band_pred": overall,
+        "diff": diff,
+        "dispersion": float(dispersion),
+        "confidence": str(result.get("overall_confidence", "high")),
+        "word_count": int(row.get("word_count", 0)),
+        "votes": [overall, overall, overall],  # Mock votes for compatibility
+        "prompt_hash": result.get("meta", {}).get("total_token_usage", {}).get("input_tokens", ""),
+        "model": "rubric_specific_mock",
+        "scoring_method": "rubric_specific"
+    }
+    
+    # Add rubric scores
+    result_dict.update(rubric_scores)
+    result_dict.update(rubric_true)
+    
+    return result_dict
+
+
+def _predict_one_legacy(row: pd.Series) -> Dict[str, Any]:
+    """Use the original pipeline for backward compatibility"""
+    from app.scoring.pipeline import score_task2_3pass
+    
+    essay = str(row["essay"])
+    question = str(row['prompt'])
+    print(f"Scoring id={row['id']} (word_count={row.get('word_count', 'N/A')}) with legacy pipeline...")
     result = score_task2_3pass(essay, question=question)
-    # flatten minimal fields
+    
+    # Extract overall score
     overall = _coerce_band(result.get("overall"), result.get("votes"))
     
     # Extract individual rubric scores from per_criterion
@@ -87,7 +164,7 @@ def _predict_one(row: pd.Series) -> Dict[str, Any]:
                 rubric_scores[f"{abbrev}_pred"] = _coerce_band(band, None)
                 break
     
-    # Parse ground-truth robustly (handles strings like "<4\r\r\r")
+    # Parse ground-truth scores
     bt_raw = _try_parse_float(row.get("band_true"))
     band_true = (
         _nearest_half(max(0.0, min(9.0, bt_raw)))
@@ -114,7 +191,7 @@ def _predict_one(row: pd.Series) -> Dict[str, Any]:
     result_dict = {
         "id": row["id"],
         "band_true": band_true,
-        "band_pred": overall,  # may be NaN if unparseable; downstream handles masks
+        "band_pred": overall,
         "diff": diff,
         "dispersion": float(dispersion),
         "confidence": str(result.get("confidence", "")),
@@ -122,6 +199,7 @@ def _predict_one(row: pd.Series) -> Dict[str, Any]:
         "votes": result.get("votes", []),
         "prompt_hash": result.get("meta", {}).get("prompt_hash", ""),
         "model": result.get("meta", {}).get("model", ""),
+        "scoring_method": "legacy"
     }
     
     # Add rubric scores
@@ -132,13 +210,17 @@ def _predict_one(row: pd.Series) -> Dict[str, Any]:
 
 
 def run_predictions(df: pd.DataFrame, cfg: PredictConfig) -> pd.DataFrame:
+    """Run predictions using either rubric-specific or legacy pipeline"""
+    predict_func = _predict_one_rubric if cfg.use_rubric_pipeline else _predict_one_legacy
+    
     rows: List[Dict[str, Any]] = []
     if cfg.workers and cfg.workers > 1:
         with ThreadPoolExecutor(max_workers=cfg.workers) as ex:
-            futures = [ex.submit(_predict_one, row) for _, row in df.iterrows()]
+            futures = [ex.submit(predict_func, row) for _, row in df.iterrows()]
             for fut in as_completed(futures):
                 rows.append(fut.result())
     else:
         for _, row in df.iterrows():
-            rows.append(_predict_one(row))
+            rows.append(predict_func(row))
+    
     return pd.DataFrame(rows)

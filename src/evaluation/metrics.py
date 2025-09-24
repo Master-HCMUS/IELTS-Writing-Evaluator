@@ -21,7 +21,29 @@ class MetricResults:
     corr_pred_wordcount: float | None
 
 
+def _compute_rubric_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> Dict[str, float]:
+    """Compute metrics for a single rubric criterion"""
+    labels = np.arange(0.0, 9.5, 0.5)  # 0.0..9.0 inclusive
+    step = labels[1] - labels[0]
+    mask = (~np.isnan(y_true)) & (~np.isnan(y_pred))
+    
+    if mask.sum() == 0:  # No valid pairs
+        return {"qwk": 0.0, "mae": float('nan'), "within_point5": 0.0}
+    
+    y_true_valid, y_pred_valid = y_true[mask], y_pred[mask]
+    y_true_idx = np.clip(np.rint((y_true_valid - labels[0]) / step).astype(int), 0, len(labels) - 1)
+    y_pred_idx = np.clip(np.rint((y_pred_valid - labels[0]) / step).astype(int), 0, len(labels) - 1)
+
+    # QWK on ordinal indices
+    qwk = cohen_kappa_score(y_true_idx, y_pred_idx, weights="quadratic", labels=np.arange(len(labels)))
+    mae = float(np.mean(np.abs(y_pred_valid - y_true_valid)))
+    within_point5 = float(np.mean(np.abs(y_pred_valid - y_true_valid) <= 0.5))
+    
+    return {"qwk": float(qwk), "mae": mae, "within_point5": within_point5}
+
+
 def compute_metrics(preds: pd.DataFrame) -> Dict[str, Any]:
+    # Overall band metrics
     y_true = preds["band_true"].astype(float).to_numpy()
     y_pred = preds["band_pred"].astype(float).to_numpy()
 
@@ -29,14 +51,25 @@ def compute_metrics(preds: pd.DataFrame) -> Dict[str, Any]:
     labels = np.arange(0.0, 9.5, 0.5)  # 0.0..9.0 inclusive
     step = labels[1] - labels[0]
     mask = (~np.isnan(y_true)) & (~np.isnan(y_pred))
-    y_true, y_pred = y_true[mask], y_pred[mask]
-    y_true_idx = np.clip(np.rint((y_true - labels[0]) / step).astype(int), 0, len(labels) - 1)
-    y_pred_idx = np.clip(np.rint((y_pred - labels[0]) / step).astype(int), 0, len(labels) - 1)
+    y_true_valid, y_pred_valid = y_true[mask], y_pred[mask]
+    y_true_idx = np.clip(np.rint((y_true_valid - labels[0]) / step).astype(int), 0, len(labels) - 1)
+    y_pred_idx = np.clip(np.rint((y_pred_valid - labels[0]) / step).astype(int), 0, len(labels) - 1)
 
-    # QWK on ordinal indices
-    qwk = cohen_kappa_score(y_true_idx, y_pred_idx, weights="quadratic", labels=np.arange(len(labels)))
-    mae = float(np.mean(np.abs(y_pred - y_true)))
-    within_point5 = float(np.mean(np.abs(y_pred - y_true) <= 0.5))
+    # Overall QWK on ordinal indices
+    overall_qwk = cohen_kappa_score(y_true_idx, y_pred_idx, weights="quadratic", labels=np.arange(len(labels)))
+    overall_mae = float(np.mean(np.abs(y_pred_valid - y_true_valid)))
+    overall_within_point5 = float(np.mean(np.abs(y_pred_valid - y_true_valid) <= 0.5))
+
+    # Rubric-specific metrics
+    rubric_metrics = {}
+    for rubric in ["tr", "cc", "lr", "gra"]:
+        true_col = f"{rubric}_true"
+        pred_col = f"{rubric}_pred"
+        
+        if true_col in preds.columns and pred_col in preds.columns:
+            rubric_true = preds[true_col].astype(float).to_numpy()
+            rubric_pred = preds[pred_col].astype(float).to_numpy()
+            rubric_metrics[rubric] = _compute_rubric_metrics(rubric_true, rubric_pred)
 
     disp = preds["dispersion"].astype(float).to_numpy()
     dispersion_mean = float(np.mean(disp))
@@ -59,9 +92,12 @@ def compute_metrics(preds: pd.DataFrame) -> Dict[str, Any]:
     cm = confusion_matrix(y_true_idx, y_pred_idx, labels=np.arange(len(labels)))
 
     return {
-        "qwk": float(qwk),
-        "mae": mae,
-        "within_point5": within_point5,
+        "overall": {
+            "qwk": float(overall_qwk),
+            "mae": overall_mae,
+            "within_point5": overall_within_point5,
+        },
+        "rubrics": rubric_metrics,
         "dispersion": {
             "mean": dispersion_mean,
             "p50": dispersion_p50,

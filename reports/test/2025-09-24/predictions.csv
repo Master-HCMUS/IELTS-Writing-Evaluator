@@ -1,0 +1,2 @@
+id,band_true,band_pred,diff,dispersion,confidence,word_count,votes,prompt_hash,model,scoring_method,tr_pred,cc_pred,lr_pred,gra_pred,tr_true,cc_true,lr_true,gra_true
+56,4.0,5.5,1.5,0.375,high,259,"[5.5, 5.5, 5.5]",10155,rubric_specific_mock,rubric_specific,5.0,5.0,5.5,6.0,4.0,4.0,4.0,4.0
