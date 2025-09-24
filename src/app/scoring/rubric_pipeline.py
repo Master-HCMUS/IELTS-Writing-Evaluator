@@ -101,7 +101,14 @@ def score_single_rubric(
         all_suggestions.extend(p.get("suggestions", []))
     
     # Deduplicate and limit
-    unique_evidence = list(dict.fromkeys(all_evidence))[:3]  # Max 3
+    seen = set()
+    unique_evidence = []
+    for item in all_evidence:
+        key = tuple(sorted(item.items())) if isinstance(item, dict) else item
+        if key not in seen:
+            seen.add(key)
+            unique_evidence.append(item)
+    unique_evidence = unique_evidence[:3]  # Max 3
     unique_errors = all_errors[:10]  # Max 10
     unique_suggestions = list(dict.fromkeys(all_suggestions))[:5]  # Max 5
     

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+
+import os
 from dataclasses import dataclass
 from typing import Optional
 
@@ -7,9 +9,11 @@ import pandas as pd
 from datasets import load_dataset
 
 
+
 @dataclass
 class DatasetConfig:
-    name: str = r"C:\Users\nguyenphong\Downloads\study master\LLM\data\cook\cook.csv"
+    # Default to data/cook/cook.csv relative to project root
+    name: str = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "data", "cook", "cook.csv")
     split: str = "test"
     num_samples: Optional[int] = None  # default: all
     seed: int = 42

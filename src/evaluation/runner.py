@@ -12,7 +12,7 @@ from .reporting import ReportConfig, save_artifacts
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run IELTS Task 2 evaluation on HF dataset")
-    parser.add_argument("--dataset", default=r"C:\Users\nguyenphong\Downloads\study master\LLM\data\cook\cook.csv")
+    parser.add_argument("--dataset", default=str(Path(__file__).parents[2] / "data" / "cook" / "cook.csv"))
     parser.add_argument("--split", default="test")
     parser.add_argument("--num-samples", type=int, default=None)
     parser.add_argument("--seed", type=int, default=42)

@@ -1,2 +1,3 @@
 id,band_true,band_pred,diff,dispersion,confidence,word_count,votes,prompt_hash,model,scoring_method,tr_pred,cc_pred,lr_pred,gra_pred,tr_true,cc_true,lr_true,gra_true
-56,4.0,5.5,1.5,0.375,high,259,"[5.5, 5.5, 5.5]",10155,rubric_specific_mock,rubric_specific,5.0,5.0,5.5,6.0,4.0,4.0,4.0,4.0
+1,9.0,7.0,-2.0,0.07638888888888913,high,277,"[7.0, 7.0, 7.0]",11565,rubric_specific_mock,rubric_specific,7.0,7.0,7.0,7.0,9.0,9.0,9.0,9.0
+0,9.0,6.5,-2.5,0.22916666666666682,high,257,"[6.5, 6.5, 6.5]",11607,rubric_specific_mock,rubric_specific,6.5,6.5,6.0,7.0,9.0,9.0,9.0,9.0
