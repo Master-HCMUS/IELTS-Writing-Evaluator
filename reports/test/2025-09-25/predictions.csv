@@ -1,3 +1,6 @@
 id,band_true,band_pred,diff,dispersion,confidence,word_count,votes,prompt_hash,model,scoring_method,tr_pred,cc_pred,lr_pred,gra_pred,tr_true,cc_true,lr_true,gra_true
-0,9.0,6.5,-2.5,0.375,high,257,"[6.5, 6.5, 6.5]",12786,rubric_specific_mock,rubric_specific,7.0,6.5,6.0,7.0,9.0,9.0,9.0,9.0
 1,9.0,7.0,-2.0,0.0,high,277,"[7.0, 7.0, 7.0]",12729,rubric_specific_mock,rubric_specific,7.0,7.0,7.0,7.0,9.0,9.0,9.0,9.0
+0,9.0,6.5,-2.5,0.375,high,257,"[6.5, 6.5, 6.5]",12786,rubric_specific_mock,rubric_specific,7.0,6.5,6.0,7.0,9.0,9.0,9.0,9.0
+3,8.0,8.0,0.0,0.2916666666666667,high,281,"[8.0, 8.0, 8.0]",12654,rubric_specific_mock,rubric_specific,8.0,7.5,7.5,8.0,6.0,7.0,9.0,9.0
+2,6.5,6.5,0.0,0.34722222222222215,high,323,"[6.5, 6.5, 6.5]",13662,rubric_specific_mock,rubric_specific,6.0,6.5,6.0,7.0,5.0,5.0,6.0,9.0
+4,6.0,7.0,1.0,0.0,high,258,"[7.0, 7.0, 7.0]",12510,rubric_specific_mock,rubric_specific,7.0,7.0,7.0,7.0,5.0,6.0,7.0,6.0
