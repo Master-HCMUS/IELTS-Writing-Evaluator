@@ -5,7 +5,23 @@
 | README.md | Root usage & setup guide | team | 2025-09-06 |
 | docs/progress/file-inventory.md | Inventory + change log | team | 2025-09-06 |
 
+| cook-training-data/finetuning_data/train.jsonl | Fine-tuning training data (744 examples, compact) | Copilot | 2025-09-27 |
+| cook-training-data/finetuning_data/test.jsonl | Fine-tuning test data (187 examples, compact) | Copilot | 2025-09-27 |
+| cook-training-data/finetuning_data/train_pretty.jsonl | Human-readable training data | Copilot | 2025-09-27 |
+| cook-training-data/finetuning_data/test_pretty.jsonl | Human-readable test data | Copilot | 2025-09-27 |
+| cook-training-data/README.md | Fine-tuning data documentation | Copilot | 2025-09-27 |
+| src/cook_training_data/prepare.py | Production modular fine-tuning data preparation script | Copilot | 2025-09-27 |
+| src/cook_training_data/data_loader.py | HuggingFace dataset loader | Copilot | 2025-09-27 |
+| src/cook_training_data/schema_mapper.py | Score response schema mapping | Copilot | 2025-09-27 |
+| src/cook_training_data/synthetic_generator.py | Azure OpenAI synthetic data generator | Copilot | 2025-09-27 |
+| src/cook_training_data/finetuning_formatter.py | JSONL formatting and validation | Copilot | 2025-09-27 |
+
 ## Change Log
+- [2025-09-27 15:00Z] Editor: Copilot
+  - files: src/cook_training_data/ (modular architecture), cook-training-data/finetuning_data/ (production dataset)
+  - summary: Established production-ready modular fine-tuning pipeline with 931 examples (744 train/187 validation), cost estimation ($8.93), and comprehensive validation
+  - notes: Removed standalone script, focused on modular architecture with proper Python module structure and CLI interface
+
 - [2025-09-06 00:00Z] Editor: Copilot
   - files: README.md, docs/progress/file-inventory.md
   - summary: Added root README with setup/run/test instructions; created inventory log.
