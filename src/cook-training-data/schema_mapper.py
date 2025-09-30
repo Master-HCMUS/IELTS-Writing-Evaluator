@@ -131,23 +131,10 @@ def map_to_score_response_schema(row: pd.Series) -> Dict[str, Any]:
     # Create per-criterion structure
     per_criterion = create_per_criterion_structure(evaluation, band_scores)
     
-    # Create the full response structure
+    # Create the full response structure - only per_criterion and overall as per the system prompt
     response = {
         "per_criterion": per_criterion,
-        "overall": overall_band,
-        "votes": [overall_band, overall_band, overall_band],  # Simulate 3-pass consistency
-        "dispersion": 0.0,  # Low dispersion for training data
-        "confidence": "high",
-        "meta": {
-            "prompt_hash": "training_data",
-            "model": "training",
-            "schema_version": "v1",
-            "rubric_version": "rubric/v1",
-            "token_usage": {
-                "input_tokens": len(prompt.split()) + len(essay.split()),
-                "output_tokens": 500
-            }
-        }
+        "overall": overall_band
     }
     
     return response
