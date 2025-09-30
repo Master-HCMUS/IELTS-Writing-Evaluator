@@ -1,15 +1,15 @@
 {
   "dataset": "chillies/IELTS-writing-task-2-evaluation",
   "dataset_split": "train",
-  "total_examples": 931,
-  "train_examples": 744,
-  "validation_examples": 187,
+  "total_examples": 1000,
+  "train_examples": 800,
+  "validation_examples": 200,
   "validation_ratio": 0.2,
   "mock_mode": true,
   "cost_estimation": {
-    "total_tokens": 1116000,
-    "estimated_training_cost_usd": 8.93,
-    "examples": 744,
+    "total_tokens": 1200000,
+    "estimated_training_cost_usd": 9.6,
+    "examples": 800,
     "avg_tokens_per_example": 1500
   },
   "format_validation": {

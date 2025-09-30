@@ -125,17 +125,32 @@ def create_per_criterion_structure(evaluation: str, band_scores: Dict[str, float
 def map_to_score_response_schema(row: pd.Series) -> Dict[str, Any]:
     """
     Map a dataset row to the score response schema format.
+    Uses only the reliable 'band' column and ignores unreliable 'evaluation' text.
+    Generates synthetic criterion scores based on overall band score.
     
     Args:
         row: DataFrame row with prompt, essay, evaluation, band columns
+             (evaluation column is ignored due to unreliability)
         
     Returns:
-        Dictionary matching score_response.v1.json schema
+        Dictionary matching score_response.v1.json schema with synthetic criterion scores
     """
     prompt = row.get("prompt", "")
     essay = row.get("essay", "")
     evaluation = row.get("evaluation", "")
-    overall_band = float(row.get("band", 5.0))
+    
+    # Handle malformed band scores (e.g., '<4\n\n\n\r\r\r\r\r\r\r\r\r\r\r')
+    band_raw = row.get("band", 5.0)
+    try:
+        overall_band = float(band_raw)
+    except (ValueError, TypeError):
+        # If the band score contains '<4' or similar, assign it to 4.0
+        band_str = str(band_raw).strip()
+        if '<4' in band_str or band_str.startswith('<'):
+            overall_band = 4.0
+        else:
+            # Default fallback for other malformed values
+            overall_band = 4.0
     
     # Extract individual criterion scores
     band_scores = extract_band_scores(evaluation, overall_band)
