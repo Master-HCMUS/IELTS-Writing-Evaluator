@@ -4,10 +4,120 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List
 
+
 from ..prompts.rubric_specific import get_rubric_prompts, get_rubric_schema
 from ..validation.schemas import validate_score_response
 from ..versioning.determinism import prompt_hash
 from .llm_client import LLMClient
+
+# --- GEC Model Imports ---
+import torch
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+import spacy
+from difflib import SequenceMatcher
+from dataclasses import dataclass, asdict
+
+
+# --- GEC Model Setup ---
+GEC_MODEL_NAME = "vennify/t5-base-grammar-correction"
+# Load GEC model and spaCy ONCE at module import
+_gec_tokenizer = AutoTokenizer.from_pretrained(GEC_MODEL_NAME)
+_gec_model = AutoModelForSeq2SeqLM.from_pretrained(GEC_MODEL_NAME)
+_gec_nlp = spacy.load("en_core_web_sm")
+
+def _sentence_tokenize(text: str):
+    doc = _gec_nlp(text)
+    return [sent.text.strip() for sent in doc.sents]
+
+def _apply_gec_t5(texts, max_length=256):
+    batch = _gec_tokenizer(texts, return_tensors="pt", padding=True, truncation=True)
+    with torch.no_grad():
+        outs = _gec_model.generate(**batch, max_length=max_length, num_beams=4, early_stopping=True)
+    corrected = [_gec_tokenizer.decode(o, skip_special_tokens=True, clean_up_tokenization_spaces=True) for o in outs]
+    return corrected
+
+def _token_edit_ops(orig: str, corrected: str):
+    a = orig.split()
+    b = corrected.split()
+    s = SequenceMatcher(a=a, b=b)
+    ops = []
+    for tag, i1, i2, j1, j2 in s.get_opcodes():
+        ops.append((tag, i1, j1, i2 - i1, j2 - j1))
+    return ops
+
+_PUNCTUATION_CHARS = set(['.', ',', '?', '!', ';', ':'])
+
+def _punctuation_accuracy(orig: str, corrected: str) -> float:
+    orig_p = [c for c in orig if c in _PUNCTUATION_CHARS]
+    corr_p = [c for c in corrected if c in _PUNCTUATION_CHARS]
+    if not orig_p and not corr_p:
+        return 1.0
+    matches = sum(1 for a, b in zip(orig_p, corr_p) if a == b)
+    denom = max(len(orig_p), len(corr_p))
+    if denom == 0:
+        return 1.0
+    return matches / denom
+
+def _complexity_metrics(text: str):
+    doc = _gec_nlp(text)
+    sents = list(doc.sents)
+    num_sents = max(1, len(sents))
+    total_tokens = len([t for t in doc if not t.is_space])
+    avg_sent_len = total_tokens / num_sents
+    subordinators = set(["although","because","since","while","whereas","unless","where","after","before","though","if","that"])
+    sub_count, clause_count = 0, 0
+    for sent in sents:
+        clause_count += 1
+        for tok in sent:
+            if tok.text.lower() in subordinators:
+                sub_count += 1
+    complex_structure_ratio = sub_count / clause_count if clause_count > 0 else 0.0
+    return {
+        "num_sents": num_sents,
+        "total_tokens": total_tokens,
+        "avg_sent_len": avg_sent_len,
+        "complex_structure_ratio": complex_structure_ratio,
+    }
+
+@dataclass
+class GrammarMetrics:
+    error_density: float
+    error_free_sentence_ratio: float
+    complex_structure_ratio: float
+    punctuation_accuracy: float
+    avg_sent_len: float
+    total_words: int
+    total_sentences: int
+    edits_count: int
+
+def extract_grammar_metrics(text: str) -> dict:
+    sents = _sentence_tokenize(text)
+    corrected_sents = _apply_gec_t5(sents)
+    total_edits, error_free, punc_accs = 0, 0, []
+    for o, c in zip(sents, corrected_sents):
+        ops = _token_edit_ops(o, c)
+        edits_here = sum(1 for op in ops if op[0] != 'equal')
+        if edits_here == 0:
+            error_free += 1
+        total_edits += edits_here
+        punc_accs.append(_punctuation_accuracy(o, c))
+    total_words = len(text.split())
+    total_sentences = len(sents)
+    error_density = total_edits / max(1, total_words)
+    error_free_sentence_ratio = error_free / max(1, total_sentences)
+    punc_accuracy = sum(punc_accs) / max(1, len(punc_accs))
+    comp = _complexity_metrics(text)
+    metrics = GrammarMetrics(
+        error_density=round(error_density, 4),
+        error_free_sentence_ratio=round(error_free_sentence_ratio, 4),
+        complex_structure_ratio=round(comp['complex_structure_ratio'], 4),
+        punctuation_accuracy=round(punc_accuracy, 4),
+        avg_sent_len=round(comp['avg_sent_len'], 2),
+        total_words=total_words,
+        total_sentences=total_sentences,
+        edits_count=total_edits
+    )
+    return asdict(metrics)
 
 
 def _repo_root_from_here() -> Path:
@@ -58,18 +168,23 @@ def score_single_rubric(
         - suggestions: aggregated suggestions from passes
         - meta: metadata including prompt hash, model, etc.
     """
+    # 1. Extract grammar metrics using GEC model (no prompt)
+    grammar_metrics = extract_grammar_metrics(essay)
+
     llm = llm_client or LLMClient()
-    
+    # 2. Feed grammar metrics into LLM prompt (as context)
     system_prompt, user_prompt_template = get_rubric_prompts(rubric_name)
+    # Add grammar metrics to the prompt context
+    metrics_str = "\n".join(f"{k}: {v}" for k, v in grammar_metrics.items())
     user_prompt = user_prompt_template.format(
         question=f"Task 2 Question: {question}\n\n" if question else "",
-        essay=essay
+        essay=essay + f"\n\n[GRAMMAR_METRICS]\n{metrics_str}"
     )
     schema = get_rubric_schema()
-    
+
     passes: List[Dict[str, Any]] = []
     total_tokens = {"input_tokens": 0, "output_tokens": 0}
-    
+
     # Run multiple passes
     start = time.perf_counter()
     for _ in range(num_passes):
@@ -78,30 +193,30 @@ def score_single_rubric(
         total_tokens["input_tokens"] += tokens.get("input_tokens", 0)
         total_tokens["output_tokens"] += tokens.get("output_tokens", 0)
     elapsed = time.perf_counter() - start
-    
+
     # Aggregate results
     votes = [float(p.get("band", 0)) for p in passes]
     band = sum(votes) / len(votes) if votes else 0.0
-    
+
     # Calculate dispersion (measure of agreement)
     if len(votes) > 1:
         mean_vote = sum(votes) / len(votes)
         dispersion = sum(abs(v - mean_vote) for v in votes) / len(votes)
     else:
         dispersion = 0.0
-    
+
     confidence = "high" if dispersion <= 0.5 else "low"
-    
+
     # Aggregate evidence, errors, and suggestions
     all_evidence = []
     all_errors = []
     all_suggestions = []
-    
+
     for p in passes:
         all_evidence.extend(p.get("evidence_quotes", []))
         all_errors.extend(p.get("errors", []))
         all_suggestions.extend(p.get("suggestions", []))
-    
+
     # Deduplicate and limit
     seen = set()
     unique_evidence = []
@@ -113,9 +228,9 @@ def score_single_rubric(
     unique_evidence = unique_evidence[:3]  # Max 3
     unique_errors = all_errors[:10]  # Max 10
     unique_suggestions = list(dict.fromkeys(all_suggestions))[:5]  # Max 5
-    
+
     phash = _rubric_prompt_hash(rubric_name)
-    
+
     # Model name
     model_name = "mock"
     try:
@@ -124,7 +239,7 @@ def score_single_rubric(
             model_name = _settings.azure_openai_deployment_scorer
     except Exception:
         pass
-    
+
     return {
         "rubric": rubric_name,
         "band": round(band * 2) / 2,  # Round to nearest 0.5
@@ -141,6 +256,7 @@ def score_single_rubric(
             "rubric_version": "rubric/v1",
             "token_usage": total_tokens,
             "scoring_time_sec": elapsed,
+            "grammar_metrics": grammar_metrics,
         }
     }
 
