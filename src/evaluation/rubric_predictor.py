@@ -63,8 +63,8 @@ def _predict_one_rubric(row: pd.Series) -> Dict[str, Any]:
     question = str(row['prompt'])
     print(f"Scoring id={row['id']} (word_count={row.get('word_count', 'N/A')}) with rubric pipeline...")
     
-    # Score using rubric-specific pipeline  
-    result = score_all_rubrics(essay, question=question)
+    # Score using rubric-specific pipeline
+    result = score_all_rubrics(essay, question=question, essay_id=row["id"])
     
     # Extract overall score
     overall = _coerce_band(result.get("overall"), None)

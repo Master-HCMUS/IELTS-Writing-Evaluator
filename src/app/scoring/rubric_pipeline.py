@@ -78,7 +78,6 @@ def score_single_rubric(
         total_tokens["input_tokens"] += tokens.get("input_tokens", 0)
         total_tokens["output_tokens"] += tokens.get("output_tokens", 0)
     elapsed = time.perf_counter() - start
-    print(f"Scoring time for rubric '{rubric_name}': {elapsed:.3f} seconds")
     
     # Aggregate results
     votes = [float(p.get("band", 0)) for p in passes]
@@ -150,7 +149,8 @@ def score_all_rubrics(
     essay: str,
     question: str | None = None,
     llm_client: LLMClient | None = None,
-    num_passes: int = 3
+    num_passes: int = 3,
+    essay_id: str | int | None = None
 ) -> Dict[str, Any]:
     """Score essay across all four rubric criteria separately.
     
@@ -180,7 +180,8 @@ def score_all_rubrics(
 
     # Print summary log per essay
     rubric_labels = ["TR", "CC", "LR", "GR"]
-    print(f"[{', '.join(rubric_labels)}] Rubric scores: {rubric_scores} - Executed time (seconds): {[f'{t:.3f}' for t in rubric_times]}")
+    id_str = f"id={essay_id} " if essay_id is not None else ""
+    print(f"{id_str}[{', '.join(rubric_labels)}] Rubric scores: {rubric_scores} - Executed time (seconds): {[f'{t:.3f}' for t in rubric_times]}")
 
     overall_score = sum(rubric_scores) / len(rubric_scores) if rubric_scores else 0.0
     overall_score = round(overall_score * 2) / 2  # Round to nearest 0.5
