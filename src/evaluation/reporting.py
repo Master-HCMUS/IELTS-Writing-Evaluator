@@ -20,9 +20,9 @@ def _ensure_dir(p: Path) -> None:
 
 
 def save_artifacts(preds: pd.DataFrame, metrics: Dict[str, Any], cfg: ReportConfig, timing_stats: dict = None) -> Dict[str, Path]:
-    date_prefix = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    datetime_prefix = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
     out_dir = cfg.output_dir if cfg.output_dir.is_absolute() else Path.cwd() / cfg.output_dir
-    out_dir = out_dir / date_prefix
+    out_dir = out_dir / datetime_prefix
     _ensure_dir(out_dir)
 
     # Files
