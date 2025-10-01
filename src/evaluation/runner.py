@@ -38,6 +38,10 @@ def main() -> None:
     else:
         preds = run_predictions(df, PredictConfig(workers=args.workers))
 
+    # Always flatten timing column for easier access
+    if "meta" in preds.columns:
+        preds["scoring_time_sec"] = preds["meta"].apply(lambda m: m.get("scoring_time_sec") if isinstance(m, dict) else None)
+
     # Timing statistics
     times = []
     for col in ["scoring_time_sec", "meta.scoring_time_sec"]:
