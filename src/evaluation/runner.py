@@ -32,15 +32,47 @@ def main() -> None:
         df = df.tail(1).reset_index(drop=True)
         print(f"Testing only the last item (id={df.iloc[0]['id']}) from dataset")
 
+
     if args.use_rubric_pipeline:
         preds = run_rubric_predictions(df, RubricPredictConfig(workers=args.workers, use_rubric_pipeline=True))
     else:
         preds = run_predictions(df, PredictConfig(workers=args.workers))
 
+    # Timing statistics
+    times = []
+    for col in ["scoring_time_sec", "meta.scoring_time_sec"]:
+        if col in preds.columns:
+            times = preds[col].dropna().astype(float).tolist()
+            break
+        # Try to extract from nested meta if not present as column
+    if not times and "meta" in preds.columns:
+        # meta is a dict, try to extract scoring_time_sec
+        times = preds["meta"].apply(lambda m: m.get("scoring_time_sec") if isinstance(m, dict) else None).dropna().astype(float).tolist()
+
+    if times:
+        total_time = sum(times)
+        max_time = max(times)
+        min_time = min(times)
+        avg_time = total_time / len(times)
+        print(f"\nTiming summary:")
+        print(f"  Total time:   {total_time:.3f} sec for {len(times)} samples")
+        print(f"  Longest run:  {max_time:.3f} sec")
+        print(f"  Fastest run:  {min_time:.3f} sec")
+        print(f"  Average time: {avg_time:.3f} sec\n")
+    else:
+        total_time = max_time = min_time = avg_time = None
+
     metrics = compute_metrics(preds)
 
     out_dir = Path(args.output_dir)
-    save_artifacts(preds, metrics, ReportConfig(output_dir=out_dir, include_plots=not args.no_plots))
+    save_artifacts(preds, metrics, ReportConfig(output_dir=out_dir, include_plots=not args.no_plots),
+                  timing_stats={
+                      "total_time": total_time,
+                      "max_time": max_time,
+                      "min_time": min_time,
+                      "avg_time": avg_time,
+                      "num_samples": len(times)
+                  })
 
 
 if __name__ == "__main__":

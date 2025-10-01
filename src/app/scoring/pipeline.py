@@ -55,6 +55,8 @@ def score_task2_3pass(essay: str, question: str | None = None, llm_client: LLMCl
         passes.append(response_json)
         total_tokens["input_tokens"] += tokens.get("input_tokens", 0)
         total_tokens["output_tokens"] += tokens.get("output_tokens", 0)
+    elapsed = time.perf_counter() - start
+    print(f"Scoring time: {elapsed:.3f} seconds")
 
     votes = [float(p["overall"]) for p in passes]
     overall, dispersion, confidence = aggregate_votes(votes)
@@ -84,6 +86,7 @@ def score_task2_3pass(essay: str, question: str | None = None, llm_client: LLMCl
             "schema_version": "v1",
             "rubric_version": "rubric/v1",
             "token_usage": total_tokens,
+            "scoring_time_sec": elapsed,
         },
     }
 

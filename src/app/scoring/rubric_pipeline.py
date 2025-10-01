@@ -71,11 +71,14 @@ def score_single_rubric(
     total_tokens = {"input_tokens": 0, "output_tokens": 0}
     
     # Run multiple passes
+    start = time.perf_counter()
     for _ in range(num_passes):
         response_json, tokens = llm.score_rubric(system_prompt, user_prompt, schema)
         passes.append(response_json)
         total_tokens["input_tokens"] += tokens.get("input_tokens", 0)
         total_tokens["output_tokens"] += tokens.get("output_tokens", 0)
+    elapsed = time.perf_counter() - start
+    print(f"Scoring time for rubric '{rubric_name}': {elapsed:.3f} seconds")
     
     # Aggregate results
     votes = [float(p.get("band", 0)) for p in passes]
@@ -138,6 +141,7 @@ def score_single_rubric(
             "schema_version": "v1",
             "rubric_version": "rubric/v1",
             "token_usage": total_tokens,
+            "scoring_time_sec": elapsed,
         }
     }
 

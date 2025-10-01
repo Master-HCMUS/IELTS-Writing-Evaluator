@@ -19,7 +19,7 @@ def _ensure_dir(p: Path) -> None:
     p.mkdir(parents=True, exist_ok=True)
 
 
-def save_artifacts(preds: pd.DataFrame, metrics: Dict[str, Any], cfg: ReportConfig) -> Dict[str, Path]:
+def save_artifacts(preds: pd.DataFrame, metrics: Dict[str, Any], cfg: ReportConfig, timing_stats: dict = None) -> Dict[str, Path]:
     date_prefix = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     out_dir = cfg.output_dir if cfg.output_dir.is_absolute() else Path.cwd() / cfg.output_dir
     out_dir = out_dir / date_prefix
@@ -44,6 +44,19 @@ def save_artifacts(preds: pd.DataFrame, metrics: Dict[str, Any], cfg: ReportConf
         f"- Split: test",
         f"- N: {len(preds)}",
         "",
+    ]
+    # Timing summary
+    if timing_stats and timing_stats.get("num_samples", 0) > 0:
+        lines += [
+            "## Timing Summary",
+            f"- Total time:   {timing_stats['total_time']:.3f} sec for {timing_stats['num_samples']} samples",
+            f"- Longest run:  {timing_stats['max_time']:.3f} sec",
+            f"- Fastest run:  {timing_stats['min_time']:.3f} sec",
+            f"- Average time: {timing_stats['avg_time']:.3f} sec",
+            "",
+        ]
+
+    lines += [
         "## Metrics Summary",
         "### Overall Band Score",
         f"- QWK: {metrics['overall']['qwk']:.3f}",
