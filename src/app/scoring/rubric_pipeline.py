@@ -165,35 +165,39 @@ def score_all_rubrics(
     results = {}
     total_tokens = {"input_tokens": 0, "output_tokens": 0}
     
-    # Score each rubric separately
+    # Score each rubric separately and collect timing
+    rubric_scores = []
+    rubric_times = []
     for rubric_name in rubric_names:
         rubric_result = score_single_rubric(essay, rubric_name, question, llm_client, num_passes)
         results[rubric_name] = rubric_result
-        
+        rubric_scores.append(rubric_result["band"])
+        rubric_times.append(rubric_result["meta"].get("scoring_time_sec", 0.0))
         # Accumulate token usage
         tokens = rubric_result["meta"]["token_usage"]
         total_tokens["input_tokens"] += tokens.get("input_tokens", 0)
         total_tokens["output_tokens"] += tokens.get("output_tokens", 0)
-    
-    # Calculate overall score as average of rubrics
-    rubric_scores = [results[name]["band"] for name in rubric_names]
-    print("Rubric scores:", rubric_scores)
+
+    # Print summary log per essay
+    rubric_labels = ["TR", "CC", "LR", "GR"]
+    print(f"[{', '.join(rubric_labels)}] Rubric scores: {rubric_scores} - Executed time (seconds): {[f'{t:.3f}' for t in rubric_times]}")
+
     overall_score = sum(rubric_scores) / len(rubric_scores) if rubric_scores else 0.0
     overall_score = round(overall_score * 2) / 2  # Round to nearest 0.5
-    
+
     # Calculate overall dispersion and confidence
     all_votes = []
     for name in rubric_names:
         all_votes.extend(results[name]["votes"])
-    
+
     if len(all_votes) > 1:
         mean_vote = sum(all_votes) / len(all_votes)
         overall_dispersion = sum(abs(v - mean_vote) for v in all_votes) / len(all_votes)
     else:
         overall_dispersion = 0.0
-    
+
     overall_confidence = "high" if overall_dispersion <= 0.5 else "low"
-    
+
     return {
         "rubrics": results,
         "overall": overall_score,
