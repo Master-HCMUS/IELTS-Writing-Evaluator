@@ -170,9 +170,6 @@ This tolerance-based optimization approach can be applied to other ordinal scori
 **Test Data**: 56 samples (2025-09-24 official baseline)  
 **Winner**: QWK Within 0.5 Calibrator (best across all metrics)  
 **Production Status**: Ready for deployment
-| **Isotonic** | 0.269 | -13.6% | 0.992 | +3.0% | 0.305 | #2 QWK |
-| **XGBoost** | 0.265 | -14.9% | 0.990 | +3.2% | 0.305 | #3 QWK |
-| **Ridge** | 0.234 | -25.1% | 1.013 | +1.0% | 0.284 | #4 QWK |
 
 ## 🔍 **Root Cause Analysis**
 
