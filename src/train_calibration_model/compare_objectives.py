@@ -1,8 +1,11 @@
 """
 Multi-Objective Calibration Comparison
 
-This script compares our existing QWK within 0.5 calibrator with 
-MAE-optimized and overall QWK-optimized versions using working implementations.
+This script compares four different calibration approaches:
+1. MAE optimization (Ridge regression)
+2. Overall QWK optimization (Isotonic regression) 
+3. QWK within 0.5 optimization (Our custom linear approach)
+4. XGBoost with custom QWK objective (Gradient boosting approach)
 """
 
 import pandas as pd
@@ -13,8 +16,14 @@ from datetime import datetime
 from sklearn.linear_model import Ridge
 from sklearn.isotonic import IsotonicRegression
 import joblib
+import sys
+
+# Add evaluation module to path for official metrics
+sys.path.append(str(Path(__file__).parent.parent / "evaluation"))
+from metrics import compute_metrics
 
 from qwk_calibrator_clean import QWKWithin05Calibrator
+from xgb_qwk_calibrator import XGBQWKCalibrator
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -97,7 +106,7 @@ def load_data(predictions_path: str) -> tuple[np.ndarray, np.ndarray]:
     return X_clean, y_clean
 
 
-def evaluate_calibrator(calibrator, X, y, name="Calibrator"):
+def evaluate_calibrator(calibrator, X, y, name="Calibrator", original_df=None):
     """Evaluate any calibrator and return metrics."""
     if hasattr(calibrator, 'evaluate'):
         # Our QWK calibrator has built-in evaluation
@@ -125,10 +134,11 @@ def evaluate_calibrator(calibrator, X, y, name="Calibrator"):
 
 def run_calibration_comparison(train_path: str, test_path: str, output_dir: str = "experiments"):
     """
-    Compare three calibration approaches:
+    Compare four calibration approaches:
     1. MAE optimization (Ridge regression)
     2. Overall QWK optimization (Isotonic regression)  
-    3. QWK within 0.5 optimization (Our approach)
+    3. QWK within 0.5 optimization (Our linear approach)
+    4. XGBoost with custom QWK objective (Gradient boosting approach)
     """
     logger.info("🔬 CALIBRATION METHODS COMPARISON")
     logger.info("=" * 80)
@@ -137,26 +147,37 @@ def run_calibration_comparison(train_path: str, test_path: str, output_dir: str 
     X_train, y_train = load_data(train_path)
     X_test, y_test = load_data(test_path)
     
-    # Calculate baseline (uncalibrated) performance
+    # Calculate baseline (uncalibrated) performance using OFFICIAL metrics
     logger.info("")
     logger.info("📊 BASELINE (UNCALIBRATED) PERFORMANCE")
     logger.info("-" * 60)
     
-    baseline_eval = evaluate_calibrator(
-        type('MockCalibrator', (), {'predict': lambda self, X: X})(), 
-        X_test, y_test, "Baseline"
-    )
+    # Load test data for official metrics calculation
+    test_df = pd.read_csv(test_path)
+    official_baseline = compute_metrics(test_df)
     
-    logger.info(f"Test MAE: {baseline_eval['mae']:.3f}")
-    logger.info(f"Test Overall QWK: {baseline_eval['qwk_overall']:.3f}")
-    logger.info(f"Test QWK within 0.5: {baseline_eval['qwk_within_tolerance']:.3f}")
-    logger.info(f"Test Within 0.5: {baseline_eval['percentage_within_tolerance']:.3f}")
+    # Create baseline eval with official metrics
+    baseline_eval = {
+        'mae': official_baseline['overall']['mae'],
+        'qwk_overall': official_baseline['overall']['qwk'],
+        'qwk_within_tolerance': official_baseline['overall']['qwk'],  # Note: official doesn't have separate QWK within 0.5
+        'percentage_within_tolerance': official_baseline['overall']['within_point5'],
+        'n_samples': len(test_df)
+    }
+    
+    logger.info(f"Test MAE: {baseline_eval['mae']:.3f} (OFFICIAL)")
+    logger.info(f"Test Overall QWK: {baseline_eval['qwk_overall']:.3f} (OFFICIAL)")
+    logger.info(f"Test Within 0.5: {baseline_eval['percentage_within_tolerance']:.3f} (OFFICIAL)")
+    logger.info("")
+    logger.info("NOTE: Using official metrics.py for baseline to match evaluation reports")
+    logger.info("Calibrator improvements will be calculated relative to this baseline")
     
     # Initialize calibrators
     calibrators = {
         'MAE': MAECalibrator(),
         'Overall_QWK': OverallQWKCalibrator(),
-        'QWK_within_0.5': QWKWithin05Calibrator(tolerance=0.5)
+        'QWK_within_0.5': QWKWithin05Calibrator(tolerance=0.5),
+        'XGBoost_QWK': XGBQWKCalibrator(tolerance=0.5, n_estimators=50, learning_rate=0.1)
     }
     
     results = {}
@@ -173,7 +194,7 @@ def run_calibration_comparison(train_path: str, test_path: str, output_dir: str 
         # Evaluate on training data
         train_metrics = evaluate_calibrator(calibrator, X_train, y_train, f"{name}_train")
         
-        # Evaluate on test data
+        # Evaluate on test data  
         test_metrics = evaluate_calibrator(calibrator, X_test, y_test, f"{name}_test")
         
         results[name] = {
@@ -209,7 +230,7 @@ def run_calibration_comparison(train_path: str, test_path: str, output_dir: str 
     logger.info(f"{'Baseline':<15} {baseline_eval['mae']:<8.3f} {baseline_eval['qwk_overall']:<8.3f} "
                f"{baseline_eval['qwk_within_tolerance']:<8.3f} {baseline_eval['percentage_within_tolerance']:<10.3f}")
     
-    for name in ['MAE', 'Overall_QWK', 'QWK_within_0.5']:
+    for name in ['MAE', 'Overall_QWK', 'QWK_within_0.5', 'XGBoost_QWK']:
         metrics = results[name]['test_metrics']
         logger.info(f"{name:<15} {metrics['mae']:<8.3f} {metrics['qwk_overall']:<8.3f} "
                    f"{metrics['qwk_within_tolerance']:<8.3f} {metrics['percentage_within_tolerance']:<10.3f}")
@@ -220,7 +241,7 @@ def run_calibration_comparison(train_path: str, test_path: str, output_dir: str 
     logger.info(f"{'Method':<15} {'MAE_Δ':<8} {'QWK_Δ':<8} {'QWK_0.5_Δ':<10} {'Within_0.5_Δ':<12}")
     logger.info("-" * 70)
     
-    for name in ['MAE', 'Overall_QWK', 'QWK_within_0.5']:
+    for name in ['MAE', 'Overall_QWK', 'QWK_within_0.5', 'XGBoost_QWK']:
         metrics = results[name]['test_metrics']
         mae_delta = baseline_eval['mae'] - metrics['mae']  # Lower MAE is better
         qwk_delta = metrics['qwk_overall'] - baseline_eval['qwk_overall']  # Higher QWK is better
@@ -236,7 +257,7 @@ def run_calibration_comparison(train_path: str, test_path: str, output_dir: str 
     logger.info(f"{'Method':<15} {'MAE_%':<8} {'QWK_%':<8} {'QWK_0.5_%':<10}")
     logger.info("-" * 50)
     
-    for name in ['MAE', 'Overall_QWK', 'QWK_within_0.5']:
+    for name in ['MAE', 'Overall_QWK', 'QWK_within_0.5', 'XGBoost_QWK']:
         metrics = results[name]['test_metrics']
         mae_pct = ((baseline_eval['mae'] - metrics['mae']) / baseline_eval['mae']) * 100
         qwk_pct = ((metrics['qwk_overall'] - baseline_eval['qwk_overall']) / max(baseline_eval['qwk_overall'], 0.001)) * 100
@@ -289,9 +310,27 @@ def run_calibration_comparison(train_path: str, test_path: str, output_dir: str 
     qwk_within_result = results['QWK_within_0.5']['test_metrics']
     mae_result = results['MAE']['test_metrics']
     qwk_result = results['Overall_QWK']['test_metrics']
+    xgb_result = results['XGBoost_QWK']['test_metrics']
     
-    if qwk_within_result['qwk_within_tolerance'] >= max(mae_result['qwk_within_tolerance'], qwk_result['qwk_within_tolerance']):
-        logger.info("✅ RECOMMENDED: QWK within 0.5 calibrator")
+    # Find best overall performer across all metrics
+    all_results = [
+        ('QWK_within_0.5', qwk_within_result),
+        ('MAE', mae_result), 
+        ('Overall_QWK', qwk_result),
+        ('XGBoost_QWK', xgb_result)
+    ]
+    
+    best_qwk_within = max(all_results, key=lambda x: x[1]['qwk_within_tolerance'])
+    best_overall_qwk = max(all_results, key=lambda x: x[1]['qwk_overall'])
+    best_mae = min(all_results, key=lambda x: x[1]['mae'])
+    
+    logger.info(f"Best QWK within 0.5: {best_qwk_within[0]} ({best_qwk_within[1]['qwk_within_tolerance']:.3f})")
+    logger.info(f"Best Overall QWK: {best_overall_qwk[0]} ({best_overall_qwk[1]['qwk_overall']:.3f})")
+    logger.info(f"Best MAE: {best_mae[0]} ({best_mae[1]['mae']:.3f})")
+    
+    # Determine overall winner (prioritize QWK within tolerance for IELTS)
+    if best_qwk_within[1]['qwk_within_tolerance'] >= 0.9:  # Very good QWK within tolerance
+        logger.info(f"✅ RECOMMENDED: {best_qwk_within[0]} calibrator")
         logger.info("   Best for practical IELTS scoring with tolerance-based optimization")
     elif mae_result['mae'] <= min(qwk_within_result['mae'], qwk_result['mae']):
         logger.info("⚠️ MAE calibrator has lowest error but may hurt QWK")
@@ -302,12 +341,14 @@ def run_calibration_comparison(train_path: str, test_path: str, output_dir: str 
 
 
 if __name__ == "__main__":
-    # Run comparison
-    train_path = "../../reports/test/2025-10-08/predictions.csv"
-    test_path = "../../reports/eval/2025-09-24/predictions.csv"
+    # Run comparison - using absolute paths
+    import os
+    base_dir = Path(__file__).parent.parent.parent  # Go up to LLM directory
+    train_path = base_dir / "reports" / "test" / "2025-10-08" / "predictions.csv"
+    test_path = base_dir / "reports" / "eval" / "2025-09-24" / "predictions.csv"
     
     try:
-        results = run_calibration_comparison(train_path, test_path)
+        results = run_calibration_comparison(str(train_path), str(test_path))
         logger.info("🎉 Calibration comparison completed successfully!")
         
     except Exception as e:
