@@ -6,7 +6,7 @@ class Settings(BaseSettings):
 	app_env: str = "dev"
 	log_level: str = "INFO"
 
-	# Azure OpenAI (wired in later phases)
+	# Azure OpenAI (primary)
 	azure_openai_endpoint: str | None = None
 	azure_openai_api_version: str = "2024-06-01"
 	azure_openai_deployment_scorer: str = "gpt-4o-mini"

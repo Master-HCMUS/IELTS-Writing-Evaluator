@@ -44,6 +44,36 @@ class LLMClient:
                 "output_tokens": 100,
             }
             return mock_response, token_usage
+        
+        try:
+            response = self.client.chat.completions.create(
+                model=settings.azure_openai_deployment_scorer,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                temperature=TEMPERATURE,
+                top_p=TOP_P,
+                response_format={"type": "json_object"},
+                max_tokens=3000,
+            )
+            
+            content = response.choices[0].message.content
+            parsed = json.loads(content)
+            
+            token_usage = {
+                "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                "output_tokens": response.usage.completion_tokens if response.usage else 0,
+            }
+            
+            return parsed, token_usage
+            
+        except Exception as e:
+            logger.error(f"Task 2 scoring failed: {e}")
+            # Fallback to stub on error
+            essay = user_prompt.split("essay according to the rubric:\n\n")[-1]
+            essay = essay.split("\n\nProvide your assessment")[0]
+            return score_once_task2(essay), {"input_tokens": 0, "output_tokens": 0}
 
     def score_rubric(self, system_prompt: str, user_prompt: str, schema: dict) -> tuple[dict[str, Any], dict[str, int]]:
         """
@@ -62,7 +92,6 @@ class LLMClient:
                 "output_tokens": 50,
             }
             return mock_response, token_usage
-        
         
         try:
             response = self.client.chat.completions.create(
