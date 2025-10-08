@@ -1,0 +1,27 @@
+{
+  "data_stats": {
+    "count": 491,
+    "pred_mean": 5.816700610997963,
+    "pred_std": 0.780506187126331,
+    "true_mean": 6.085539714867617,
+    "true_std": 1.3235753465176459,
+    "mae": 1.034623217922607,
+    "rmse": 1.2680469129820953
+  },
+  "best_model": "isotonic",
+  "best_mae": 0.9880519450600007,
+  "model_summaries": {
+    "isotonic": {
+      "eval_metrics": {
+        "mae": 0.9880519450600007,
+        "rmse": 1.192821203599025,
+        "r2": 0.18616048111317307,
+        "n_samples": 491,
+        "mean_residual": -2.315414210216212e-16,
+        "std_residual": 1.192821203599025,
+        "max_abs_residual": 3.2138888888888886
+      },
+      "cv_metrics": {}
+    }
+  }
+}

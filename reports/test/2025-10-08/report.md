@@ -13,12 +13,6 @@ Date (UTC): 2025-10-08T06:59:20.392972+00:00
 - MAE: 1.035
 - Within 0.5: 0.383
 
-### Rubric Scores
-**TR**: QWK=0.000, MAE=nan, Within 0.5=0.000
-**CC**: QWK=0.000, MAE=nan, Within 0.5=0.000
-**LR**: QWK=0.000, MAE=nan, Within 0.5=0.000
-**GRA**: QWK=0.000, MAE=nan, Within 0.5=0.000
-
 ### Other Metrics
 - Dispersion mean / p50 / p95: 0.108 / 0.000 / 0.500
 - Low-confidence rate (>0.5): 0.008
