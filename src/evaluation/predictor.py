@@ -54,13 +54,16 @@ def _coerce_band(overall: Any, votes: Any) -> float:
 @dataclass
 class PredictConfig:
     workers: int = 2
+    api_provider: str = "azure"  # Options: azure, openai
 
 
-def _predict_one(row: pd.Series) -> Dict[str, Any]:
+def _predict_one(row: pd.Series, api_provider: str = "azure") -> Dict[str, Any]:
     essay = str(row["essay"])
     question = str(row['prompt'])
     print(f"Scoring id={row['id']} (word_count={row.get('word_count', 'N/A')})...")
-    result = score_task2_3pass(essay, question=question)
+    from app.scoring.llm_client import LLMClient
+    llm_client = LLMClient(provider=api_provider)
+    result = score_task2_3pass(essay, question=question, llm_client=llm_client)
     # flatten minimal fields
     overall = _coerce_band(result.get("overall"), result.get("votes"))
     
@@ -135,10 +138,10 @@ def run_predictions(df: pd.DataFrame, cfg: PredictConfig) -> pd.DataFrame:
     rows: List[Dict[str, Any]] = []
     if cfg.workers and cfg.workers > 1:
         with ThreadPoolExecutor(max_workers=cfg.workers) as ex:
-            futures = [ex.submit(_predict_one, row) for _, row in df.iterrows()]
+            futures = [ex.submit(_predict_one, row, cfg.api_provider) for _, row in df.iterrows()]
             for fut in as_completed(futures):
                 rows.append(fut.result())
     else:
         for _, row in df.iterrows():
-            rows.append(_predict_one(row))
+            rows.append(_predict_one(row, cfg.api_provider))
     return pd.DataFrame(rows)

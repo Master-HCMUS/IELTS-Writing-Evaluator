@@ -55,16 +55,19 @@ def _coerce_band(overall: Any, votes: Any) -> float:
 class PredictConfig:
     workers: int = 2
     use_rubric_pipeline: bool = True  # New option to use rubric-specific scoring
+    api_provider: str = "azure"  # Options: azure, openai
 
 
-def _predict_one_rubric(row: pd.Series) -> Dict[str, Any]:
+def _predict_one_rubric(row: pd.Series, api_provider: str = "azure") -> Dict[str, Any]:
     """Use the new rubric-specific pipeline for scoring"""
     essay = str(row["essay"])
     question = str(row['prompt'])
     print(f"Scoring id={row['id']} (word_count={row.get('word_count', 'N/A')}) with rubric pipeline...")
-    
-    # Score using rubric-specific pipeline  
-    result = score_all_rubrics(essay, question=question)
+
+    # Score using rubric-specific pipeline
+    from app.scoring.llm_client import LLMClient
+    llm_client = LLMClient(provider=api_provider)
+    result = score_all_rubrics(essay, question=question, llm_client=llm_client)
     
     # Extract overall score
     overall = _coerce_band(result.get("overall"), None)
@@ -129,14 +132,16 @@ def _predict_one_rubric(row: pd.Series) -> Dict[str, Any]:
     return result_dict
 
 
-def _predict_one_legacy(row: pd.Series) -> Dict[str, Any]:
+def _predict_one_legacy(row: pd.Series, api_provider: str = "azure") -> Dict[str, Any]:
     """Use the original pipeline for backward compatibility"""
     from app.scoring.pipeline import score_task2_3pass
-    
+
     essay = str(row["essay"])
     question = str(row['prompt'])
     print(f"Scoring id={row['id']} (word_count={row.get('word_count', 'N/A')}) with legacy pipeline...")
-    result = score_task2_3pass(essay, question=question)
+    from app.scoring.llm_client import LLMClient
+    llm_client = LLMClient(provider=api_provider)
+    result = score_task2_3pass(essay, question=question, llm_client=llm_client)
     
     # Extract overall score
     overall = _coerce_band(result.get("overall"), result.get("votes"))
@@ -212,15 +217,15 @@ def _predict_one_legacy(row: pd.Series) -> Dict[str, Any]:
 def run_predictions(df: pd.DataFrame, cfg: PredictConfig) -> pd.DataFrame:
     """Run predictions using either rubric-specific or legacy pipeline"""
     predict_func = _predict_one_rubric if cfg.use_rubric_pipeline else _predict_one_legacy
-    
+
     rows: List[Dict[str, Any]] = []
     if cfg.workers and cfg.workers > 1:
         with ThreadPoolExecutor(max_workers=cfg.workers) as ex:
-            futures = [ex.submit(predict_func, row) for _, row in df.iterrows()]
+            futures = [ex.submit(predict_func, row, cfg.api_provider) for _, row in df.iterrows()]
             for fut in as_completed(futures):
                 rows.append(fut.result())
     else:
         for _, row in df.iterrows():
-            rows.append(predict_func(row))
-    
+            rows.append(predict_func(row, cfg.api_provider))
+
     return pd.DataFrame(rows)

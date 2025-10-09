@@ -21,6 +21,8 @@ def main() -> None:
     parser.add_argument("--no-plots", action="store_true")
     parser.add_argument("--last-only", action="store_true", help="Test only the last item in dataset")
     parser.add_argument("--use-rubric-pipeline", action="store_true", help="Use rubric-specific scoring pipeline")
+    parser.add_argument("--api-provider", default="azure", choices=["azure", "openai"],
+                        help="API provider to use (default: azure)")
 
     args = parser.parse_args()
 
@@ -33,9 +35,9 @@ def main() -> None:
         print(f"Testing only the last item (id={df.iloc[0]['id']}) from dataset")
 
     if args.use_rubric_pipeline:
-        preds = run_rubric_predictions(df, RubricPredictConfig(workers=args.workers, use_rubric_pipeline=True))
+        preds = run_rubric_predictions(df, RubricPredictConfig(workers=args.workers, use_rubric_pipeline=True, api_provider=args.api_provider))
     else:
-        preds = run_predictions(df, PredictConfig(workers=args.workers))
+        preds = run_predictions(df, PredictConfig(workers=args.workers, api_provider=args.api_provider))
 
     metrics = compute_metrics(preds)
 

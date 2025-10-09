@@ -91,9 +91,8 @@ def score_task2_3pass(essay: str, question: str | None = None, llm_client: LLMCl
     model_name = "mock"
     try:
         if getattr(llm, "mock_mode", True) is False:
-            # AzureOpenAI client doesn't expose model directly; use settings in meta
-            from ..config import settings as _settings
-            model_name = _settings.azure_openai_deployment_scorer
+            # Get model name from LLM client
+            model_name = getattr(llm, "model_scorer", "unknown")
     except Exception:
         pass
 

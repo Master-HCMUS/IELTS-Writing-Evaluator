@@ -118,8 +118,8 @@ def score_single_rubric(
     model_name = "mock"
     try:
         if getattr(llm, "mock_mode", True) is False:
-            from ..config import settings as _settings
-            model_name = _settings.azure_openai_deployment_scorer
+            # Get model name from LLM client
+            model_name = getattr(llm, "model_scorer", "unknown")
     except Exception:
         pass
     
