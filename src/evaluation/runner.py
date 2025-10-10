@@ -23,6 +23,10 @@ def main() -> None:
     parser.add_argument("--use-rubric-pipeline", action="store_true", help="Use rubric-specific scoring pipeline")
     parser.add_argument("--api-provider", default="azure", choices=["azure", "openai"],
                         help="API provider to use (default: azure)")
+    parser.add_argument("--report-title", default="IELTS Task 2 Evaluation Report",
+                        help="Title for the evaluation report")
+    parser.add_argument("--report-notes", default=None,
+                        help="Additional notes to include in the report")
 
     args = parser.parse_args()
 
@@ -42,7 +46,18 @@ def main() -> None:
     metrics = compute_metrics(preds)
 
     out_dir = Path(args.output_dir)
-    save_artifacts(preds, metrics, ReportConfig(output_dir=out_dir, include_plots=not args.no_plots))
+    report_cfg = ReportConfig(
+        output_dir=out_dir, 
+        include_plots=not args.no_plots,
+        title=args.report_title,
+        notes=args.report_notes,
+        dataset_name=args.dataset,
+        split=args.split,
+        num_samples=len(df),
+        use_rubric_pipeline=args.use_rubric_pipeline,
+        api_provider=args.api_provider
+    )
+    save_artifacts(preds, metrics, report_cfg)
 
 
 if __name__ == "__main__":
