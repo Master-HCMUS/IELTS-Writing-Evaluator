@@ -17,7 +17,7 @@ def main() -> None:
     parser.add_argument("--num-samples", type=int, default=None)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--workers", type=int, default=2)
-    parser.add_argument("--output-dir", default=str(Path("reports") / "test"))
+    parser.add_argument("--output-dir", default=str(Path("reports") / "eval"))
     parser.add_argument("--no-plots", action="store_true")
     parser.add_argument("--last-only", action="store_true", help="Test only the last item in dataset")
     parser.add_argument("--use-rubric-pipeline", action="store_true", help="Use rubric-specific scoring pipeline")
