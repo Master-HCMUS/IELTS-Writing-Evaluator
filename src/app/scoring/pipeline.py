@@ -36,7 +36,7 @@ def _phase1_prompt_hash() -> str:
 
 
 def score_task2_3pass(essay: str, question: str | None = None, llm_client: LLMClient | None = None, 
-                     enable_calibration: bool = True) -> dict[str, Any]:
+                     enable_calibration: bool = False) -> dict[str, Any]:
     """Run the deterministic 3-pass Task 2 scorer and return an aggregated payload.
 
     Args:
