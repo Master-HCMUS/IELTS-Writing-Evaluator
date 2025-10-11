@@ -1,0 +1,10 @@
+{
+  "version_id": "v0_base_task2",
+  "generation_reasoning": "Base prompt from task2.py (current production prompt)",
+  "parent_version": null,
+  "performance": {
+    "within_05_rate": 0.34,
+    "mae": 1.19,
+    "qwk": 0.45941986522121303
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "version_id": "v4_direct_refined",
+  "generation_reasoning": "Direct refinement from v3_direct_refined. Target: 4.5, Was: 8.0, Error: 3.50",
+  "parent_version": "v3_direct_refined",
+  "performance": {
+    "within_05_rate": 0.5,
+    "mae": 1.11,
+    "qwk": 0.46918918918918917
+  }
+}

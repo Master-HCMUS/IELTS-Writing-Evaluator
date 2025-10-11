@@ -1,0 +1,47 @@
+[
+  {
+    "prompt_id": "v0_base_task2",
+    "within_05_rate": 0.3,
+    "mae": 1.33,
+    "qwk": 0.4136926438455937,
+    "mean_error": 0.35,
+    "std_error": 1.8472953201911166,
+    "num_samples": 50
+  },
+  {
+    "prompt_id": "v1_direct_refined",
+    "within_05_rate": 0.28,
+    "mae": 1.54,
+    "qwk": 0.37964338781575035,
+    "mean_error": 1.38,
+    "std_error": 1.1981652640600127,
+    "num_samples": 50
+  },
+  {
+    "prompt_id": "v2_direct_refined",
+    "within_05_rate": 0.48,
+    "mae": 1.18,
+    "qwk": 0.4881370826010545,
+    "mean_error": -0.62,
+    "std_error": 1.6509391266791154,
+    "num_samples": 50
+  },
+  {
+    "prompt_id": "v3_direct_refined",
+    "within_05_rate": 0.28,
+    "mae": 1.53,
+    "qwk": 0.42869057547956635,
+    "mean_error": 1.45,
+    "std_error": 1.15,
+    "num_samples": 50
+  },
+  {
+    "prompt_id": "v4_direct_refined",
+    "within_05_rate": 0.5,
+    "mae": 1.11,
+    "qwk": 0.46918918918918917,
+    "mean_error": -0.65,
+    "std_error": 1.4256577429383253,
+    "num_samples": 50
+  }
+]
