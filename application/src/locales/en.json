@@ -1,0 +1,91 @@
+{
+  "nav": {
+    "home": "Home",
+    "practice": "Practice",
+    "evaluation": "Evaluation",
+    "course": "Course",
+    "dashboard": "Dashboard"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "submit": "Submit",
+    "close": "Close"
+  },
+  "landing": {
+    "title": "IELTS Writing Evaluator | TrumIELTS",
+    "subtitle": "AI-Powered Evaluation",
+    "description": "Get instant feedback on your writing tasks, practice with sample questions, and track your progress with detailed analytics.",
+    "getStarted": "Get Started",
+    "learnMore": "Learn More",
+    "features": {
+      "title": "Features",
+      "aiEvaluation": "AI-Powered Evaluation",
+      "aiEvaluationDesc": "Receive detailed feedback on your writing with band score predictions",
+      "practiceTests": "Practice Tests",
+      "practiceTestsDesc": "Access a wide range of IELTS writing tasks and sample questions",
+      "progressTracking": "Progress Tracking",
+      "progressTrackingDesc": "Monitor your improvement with comprehensive analytics and reports",
+      "trackProgress": "Track Progress",
+      "trackProgressDesc": "Monitor your improvement over time with detailed analytics"
+    }
+  },
+  "practice": {
+    "title": "Writing Practice",
+    "selectTask": "Select a Task Type",
+    "task1": "Task 1 - Academic",
+    "task2": "Task 2 - Academic",
+    "task1General": "Task 1 - General Training",
+    "task2General": "Task 2 - General Training",
+    "startPractice": "Start Practice",
+    "instructions": "Instructions",
+    "wordCount": "Word Count",
+    "timeLimit": "Time Limit",
+    "minutes": "minutes",
+    "submitAnswer": "Submit Answer"
+  },
+  "evaluation": {
+    "title": "Writing Evaluation",
+    "yourScore": "Your Score",
+    "bandScore": "Band Score",
+    "feedback": "Feedback",
+    "strengths": "Strengths",
+    "improvements": "Areas for Improvement",
+    "detailedAnalysis": "Detailed Analysis",
+    "lexicalResource": "Lexical Resource",
+    "grammaticalRange": "Grammatical Range & Accuracy",
+    "taskAchievement": "Task Achievement",
+    "coherenceCohesion": "Coherence & Cohesion"
+  },
+  "course": {
+    "title": "IELTS Writing Course",
+    "lessons": "Lessons",
+    "quizzes": "Quizzes",
+    "resources": "Resources",
+    "progress": "Progress"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "recentActivity": "Recent Activity",
+    "statistics": "Statistics",
+    "averageScore": "Average Score",
+    "totalPractices": "Total Practices",
+    "studyStreak": "Study Streak",
+    "days": "days"
+  },
+  "language": {
+    "english": "English",
+    "vietnamese": "Tiếng Việt",
+    "selectLanguage": "Select Language"
+  }
+}
