@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, TrendingUp, Target, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { AuthModal, UserMenu } from "@/components/auth";
+import { useAuth } from "@/contexts/AuthContext";
 import heroImage from "@/assets/hero-image.jpg";
 import aiFeedbackImage from "@/assets/ai-feedback.jpg";
 import improveImage from "@/assets/improve.jpg";
@@ -12,6 +15,9 @@ import progressTrackingImage from "@/assets/progress-tracking.jpg";
 const Landing = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
   const features = [
     {
@@ -46,7 +52,36 @@ const Landing = () => {
           </div>
           <div className="flex items-center gap-2">
             <LanguageSwitcher />
-            <Button variant="outline" size="sm" onClick={() => navigate("/practice")}>{t('landing.getStarted')}</Button>
+            {user ? (
+              <>
+                <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>
+                  {t('dashboard.title')}
+                </Button>
+                <UserMenu />
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setAuthMode('login');
+                    setAuthModalOpen(true);
+                  }}
+                >
+                  {t('auth.login.button')}
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setAuthMode('register');
+                    setAuthModalOpen(true);
+                  }}
+                >
+                  {t('auth.register.button')}
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -65,10 +100,31 @@ const Landing = () => {
                   {t('landing.description')}
                 </p>
                 <div className="flex flex-col gap-3 sm:flex-row">
-                  <Button size="lg" onClick={() => navigate("/practice")}>
+                  <Button
+                    size="lg"
+                    onClick={() => {
+                      if (user) {
+                        navigate("/practice");
+                      } else {
+                        setAuthMode('login');
+                        setAuthModalOpen(true);
+                      }
+                    }}
+                  >
                     {t('practice.startPractice')}
                   </Button>
-                  <Button size="lg" variant="outline" onClick={() => navigate("/dashboard")}>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    onClick={() => {
+                      if (user) {
+                        navigate("/dashboard");
+                      } else {
+                        setAuthMode('register');
+                        setAuthModalOpen(true);
+                      }
+                    }}
+                  >
                     {t('dashboard.title')}
                   </Button>
                 </div>
@@ -149,7 +205,17 @@ const Landing = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="flex justify-center pt-2">
-              <Button size="lg" onClick={() => navigate("/practice")}>
+              <Button
+                size="lg"
+                onClick={() => {
+                  if (user) {
+                    navigate("/practice");
+                  } else {
+                    setAuthMode('register');
+                    setAuthModalOpen(true);
+                  }
+                }}
+              >
                 Start Your First Practice
               </Button>
             </CardContent>
@@ -162,6 +228,12 @@ const Landing = () => {
           <p>© 2025 ScoreSculpt AI. All rights reserved.</p>
         </div>
       </footer>
+
+      <AuthModal
+        open={authModalOpen}
+        onOpenChange={setAuthModalOpen}
+        defaultMode={authMode}
+      />
     </div>
   );
 };

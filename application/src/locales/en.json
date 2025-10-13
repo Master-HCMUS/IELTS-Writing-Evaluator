@@ -87,5 +87,30 @@
     "english": "English",
     "vietnamese": "Tiếng Việt",
     "selectLanguage": "Select Language"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "description": "Enter your credentials to access your account",
+      "button": "Sign In",
+      "link": "Sign in"
+    },
+    "register": {
+      "title": "Sign Up",
+      "description": "Create your account to get started",
+      "button": "Sign Up",
+      "link": "Sign up",
+      "success": "Registration successful! Please check your email to confirm your account."
+    },
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "logout": "Log out",
+    "profile": "Profile"
   }
 }

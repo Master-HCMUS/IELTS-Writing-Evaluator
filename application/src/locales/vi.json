@@ -87,5 +87,30 @@
     "english": "English",
     "vietnamese": "Tiếng Việt",
     "selectLanguage": "Chọn ngôn ngữ"
+  },
+  "auth": {
+    "login": {
+      "title": "Đăng Nhập",
+      "description": "Nhập thông tin đăng nhập để truy cập tài khoản",
+      "button": "Đăng Nhập",
+      "link": "Đăng nhập"
+    },
+    "register": {
+      "title": "Đăng Ký",
+      "description": "Tạo tài khoản để bắt đầu",
+      "button": "Đăng Ký",
+      "link": "Đăng ký",
+      "success": "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản."
+    },
+    "email": "Email",
+    "emailPlaceholder": "Nhập email của bạn",
+    "password": "Mật Khẩu",
+    "passwordPlaceholder": "Nhập mật khẩu",
+    "confirmPassword": "Xác Nhận Mật Khẩu",
+    "confirmPasswordPlaceholder": "Xác nhận mật khẩu",
+    "noAccount": "Chưa có tài khoản?",
+    "hasAccount": "Đã có tài khoản?",
+    "logout": "Đăng Xuất",
+    "profile": "Hồ Sơ"
   }
 }
