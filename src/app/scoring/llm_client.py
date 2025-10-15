@@ -146,3 +146,65 @@ class LLMClient:
             if "\n\nProvide your" in essay:
                 essay = essay.split("\n\nProvide your")[0]
             return score_single_rubric_mock(essay, system_prompt), {"input_tokens": 0, "output_tokens": 0}
+
+    def generate_question(self, system_prompt: str, user_prompt: str, schema: dict) -> tuple[dict[str, Any], dict[str, int]]:
+        """
+        Generate an IELTS Task 2 question using LLM or mock.
+        Returns (response_json, token_usage).
+        """
+        if self.mock_mode:
+            # Use mock fallback for local testing
+            from ..generation.question_pipeline import _get_fallback_question
+            # Parse difficulty from user prompt
+            difficulty = "medium"
+            if "easy" in user_prompt.lower():
+                difficulty = "easy"
+            elif "hard" in user_prompt.lower():
+                difficulty = "hard"
+
+            # Parse topic if specified
+            topic = None
+            if "topic should be related to" in user_prompt:
+                topic_part = user_prompt.split("topic should be related to")[1].strip()
+                topic = topic_part.split(".")[0].strip()
+
+            mock_response = _get_fallback_question(difficulty, topic)
+            token_usage = {
+                "input_tokens": len(system_prompt.split()) + len(user_prompt.split()),
+                "output_tokens": 50,
+            }
+            return mock_response, token_usage
+
+        try:
+            response = self.client.chat.completions.create(
+                model='google/gemma-2-9b-it',
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                temperature=0.7,  # Higher temperature for creative generation
+                top_p=TOP_P,
+                response_format={"type": "json_object"},
+                max_tokens=500,
+            )
+
+            content = response.choices[0].message.content
+            parsed = json.loads(content)
+
+            token_usage = {
+                "input_tokens": response.usage.prompt_tokens if response.usage else 0,
+                "output_tokens": response.usage.completion_tokens if response.usage else 0,
+            }
+
+            return parsed, token_usage
+
+        except Exception as e:
+            logger.error(f"Question generation failed: {e}")
+            # Fallback to mock on error
+            from ..generation.question_pipeline import _get_fallback_question
+            difficulty = "medium"
+            if "easy" in user_prompt.lower():
+                difficulty = "easy"
+            elif "hard" in user_prompt.lower():
+                difficulty = "hard"
+            return _get_fallback_question(difficulty), {"input_tokens": 0, "output_tokens": 0}

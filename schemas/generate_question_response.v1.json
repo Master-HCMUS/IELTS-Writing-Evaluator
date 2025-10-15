@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "generate_question_response.v1.json",
+  "title": "GenerateQuestionResponseV1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50
+    },
+    "question": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 1000
+    },
+    "topic": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": ["easy", "medium", "hard"]
+    }
+  },
+  "required": ["id", "question", "topic", "difficulty"]
+}

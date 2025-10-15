@@ -51,9 +51,25 @@ def validate_facts_task1(payload: dict[str, Any]) -> None:
 	_get_validator("facts_task1.v1.json").validate(payload)
 
 
+def validate_generate_question_request(payload: dict[str, Any]) -> None:
+	"""
+	Raises ValidationError on invalid payload.
+	"""
+	_get_validator("generate_question_request.v1.json").validate(payload)
+
+
+def validate_generate_question_response(payload: dict[str, Any]) -> None:
+	"""
+	Raises ValidationError on invalid payload.
+	"""
+	_get_validator("generate_question_response.v1.json").validate(payload)
+
+
 __all__ = [
 	"validate_score_request",
 	"validate_score_response",
 	"validate_facts_task1",
+	"validate_generate_question_request",
+	"validate_generate_question_response",
 	"ValidationError",
 ]

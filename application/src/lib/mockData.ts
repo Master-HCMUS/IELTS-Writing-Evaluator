@@ -1,10 +1,49 @@
-// Mock data for the IELTS Writing Evaluator
+// Types for the IELTS Writing Evaluator
 
 export interface EssayQuestion {
   id: string;
   question: string;
   topic: string;
   difficulty: 'easy' | 'medium' | 'hard';
+}
+
+// API Response Types
+export interface EvaluationError {
+  span: string;
+  type: string;
+  fix: string;
+}
+
+export interface EvaluationSuggestion {
+  suggestion: string;
+}
+
+export interface EvaluationCriterion {
+  name: string;
+  band: number;
+  evidence_quotes: string[];
+  errors: EvaluationError[];
+  suggestions: string[];
+}
+
+export interface EvaluationMeta {
+  prompt_hash: string;
+  model: string;
+  schema_version: string;
+  rubric_version: string;
+  token_usage: {
+    input_tokens: number;
+    output_tokens: number;
+  };
+}
+
+export interface EvaluationResult {
+  per_criterion: EvaluationCriterion[];
+  overall: number;
+  votes: number[];
+  dispersion: number;
+  confidence: string;
+  meta: EvaluationMeta;
 }
 
 export interface EssayEvaluation {
