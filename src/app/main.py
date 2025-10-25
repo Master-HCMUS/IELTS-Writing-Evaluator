@@ -7,17 +7,30 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import ulid
 
 from .config import settings
 from .scoring.pipeline import score_task2_3pass
+from .generation.question_pipeline import generate_question
 from .validation.schemas import (
 	ValidationError,
 	validate_score_request,
 	validate_score_response,
+	validate_generate_question_request,
 )
 
 app = FastAPI(title="IELTS Scoring PoC", version="0.1.0")
+
+# Configure CORS for frontend integration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "http://localhost:8080"],  # Vite dev server and common React ports
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Configure basic logging according to settings
 logging.basicConfig(
 	level=getattr(logging, settings.log_level.upper(), logging.INFO),
@@ -154,6 +167,33 @@ def score(request: dict[str, Any]) -> dict[str, Any]:
 		logger.warning("failed to record run", extra={"run_id": run_id, "error": str(e)})
 
 	return resp
+
+
+@app.post("/generate-question")
+def generate_question_endpoint(request: dict[str, Any] = None) -> dict[str, Any]:
+	# Default request if none provided
+	if request is None:
+		request = {}
+
+	# Validate incoming schema
+	try:
+		validate_generate_question_request(request)
+	except ValidationError as ve:
+		raise HTTPException(status_code=422, detail=str(ve)) from ve
+
+	difficulty = request.get("difficulty", "medium")
+	topic = request.get("topic")
+
+	run_id = str(ulid.new())
+
+	# Generate the question
+	question_data = generate_question(difficulty=difficulty, topic=topic)
+
+	# Add metadata
+	question_data["run_id"] = run_id
+	question_data["generated_at"] = datetime.now(timezone.utc).isoformat()
+
+	return question_data
 
 
 @app.get("/metrics")

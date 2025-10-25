@@ -1,0 +1,116 @@
+{
+  "nav": {
+    "home": "Trang chủ",
+    "practice": "Luyện tập",
+    "evaluation": "Đánh giá",
+    "course": "Khóa học",
+    "dashboard": "Bảng điều khiển"
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "success": "Thành công",
+    "cancel": "Hủy",
+    "confirm": "Xác nhận",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Chỉnh sửa",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước đó",
+    "submit": "Gửi",
+    "close": "Đóng"
+  },
+  "landing": {
+    "title": "Công cụ Đánh giá Viết IELTS | TrumIELTS",
+    "subtitle": "Đánh giá được hỗ trợ bởi AI",
+    "description": "Nhận phản hồi tức thì về các bài viết của bạn, luyện tập với các câu hỏi mẫu và theo dõi tiến độ với phân tích chi tiết.",
+    "getStarted": "Bắt đầu",
+    "learnMore": "Tìm hiểu thêm",
+    "features": {
+      "title": "Tính năng",
+      "aiEvaluation": "Đánh giá được hỗ trợ bởi AI",
+      "aiEvaluationDesc": "Nhận phản hồi chi tiết về bài viết của bạn với dự đoán điểm band",
+      "practiceTests": "Bài luyện tập",
+      "practiceTestsDesc": "Truy cập nhiều loại bài viết IELTS và câu hỏi mẫu",
+      "progressTracking": "Theo dõi tiến độ",
+      "progressTrackingDesc": "Theo dõi sự cải thiện của bạn với phân tích và báo cáo toàn diện",
+      "trackProgress": "Theo dõi tiến độ",
+      "trackProgressDesc": "Theo dõi sự cải thiện của bạn theo thời gian với phân tích chi tiết"
+    }
+  },
+  "practice": {
+    "title": "Luyện tập Viết",
+    "selectTask": "Chọn loại bài tập",
+    "task1": "Bài 1 - Học thuật",
+    "task2": "Bài 2 - Học thuật",
+    "task1General": "Bài 1 - Đào tạo chung",
+    "task2General": "Bài 2 - Đào tạo chung",
+    "startPractice": "Bắt đầu luyện tập",
+    "instructions": "Hướng dẫn",
+    "wordCount": "Số từ",
+    "timeLimit": "Thời gian giới hạn",
+    "minutes": "phút",
+    "submitAnswer": "Gửi bài làm"
+  },
+  "evaluation": {
+    "title": "Đánh giá Bài viết",
+    "yourScore": "Điểm của bạn",
+    "bandScore": "Điểm Band",
+    "feedback": "Phản hồi",
+    "strengths": "Điểm mạnh",
+    "improvements": "Lĩnh vực cần cải thiện",
+    "detailedAnalysis": "Phân tích chi tiết",
+    "lexicalResource": "Nguồn từ vựng",
+    "grammaticalRange": "Phạm vi và độ chính xác ngữ pháp",
+    "taskAchievement": "Hoàn thành nhiệm vụ",
+    "coherenceCohesion": "Tính mạch lạc và gắn kết"
+  },
+  "course": {
+    "title": "Khóa học Viết IELTS",
+    "lessons": "Bài học",
+    "quizzes": "Bài kiểm tra",
+    "resources": "Tài nguyên",
+    "progress": "Tiến độ"
+  },
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "overview": "Tổng quan",
+    "recentActivity": "Hoạt động gần đây",
+    "statistics": "Thống kê",
+    "averageScore": "Điểm trung bình",
+    "totalPractices": "Tổng số lần luyện tập",
+    "studyStreak": "Chuỗi học tập",
+    "days": "ngày"
+  },
+  "language": {
+    "english": "English",
+    "vietnamese": "Tiếng Việt",
+    "selectLanguage": "Chọn ngôn ngữ"
+  },
+  "auth": {
+    "login": {
+      "title": "Đăng Nhập",
+      "description": "Nhập thông tin đăng nhập để truy cập tài khoản",
+      "button": "Đăng Nhập",
+      "link": "Đăng nhập"
+    },
+    "register": {
+      "title": "Đăng Ký",
+      "description": "Tạo tài khoản để bắt đầu",
+      "button": "Đăng Ký",
+      "link": "Đăng ký",
+      "success": "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản."
+    },
+    "email": "Email",
+    "emailPlaceholder": "Nhập email của bạn",
+    "password": "Mật Khẩu",
+    "passwordPlaceholder": "Nhập mật khẩu",
+    "confirmPassword": "Xác Nhận Mật Khẩu",
+    "confirmPasswordPlaceholder": "Xác nhận mật khẩu",
+    "noAccount": "Chưa có tài khoản?",
+    "hasAccount": "Đã có tài khoản?",
+    "logout": "Đăng Xuất",
+    "profile": "Hồ Sơ"
+  }
+}

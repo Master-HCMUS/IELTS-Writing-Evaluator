@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "generate_question_request.v1.json",
+  "title": "GenerateQuestionRequestV1",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "difficulty": {
+      "type": "string",
+      "enum": ["easy", "medium", "hard"],
+      "default": "medium"
+    },
+    "topic": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Optional specific topic for the question"
+    }
+  },
+  "required": []
+}

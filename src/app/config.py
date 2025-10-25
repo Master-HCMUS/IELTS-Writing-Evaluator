@@ -6,8 +6,8 @@ class Settings(BaseSettings):
 	app_env: str = "dev"
 	log_level: str = "INFO"
 
-	# API Provider selection (default: azure)
-	api_provider: str = "azure"  # Options: azure, openai
+	# API Provider selection (default: openai)
+	api_provider: str = "openai"  # Options: azure, openai
 
 	# Azure OpenAI
 	azure_openai_endpoint: str | None = None
@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 	# OpenAI-compatible API (includes direct OpenAI API and other providers)
 	openai_base_url: str | None = None  # None = use OpenAI's default endpoint
 	openai_api_key: str | None = None
-	openai_model_scorer: str = "deepseek/deepseek-r1-0528-qwen3-8b"
+	openai_model_scorer: str = "google/gemma-2-9b-it"
 	#openai_model_scorer: str = "microsoft/phi-4"
 
 	# Storage (Phase 1+)
